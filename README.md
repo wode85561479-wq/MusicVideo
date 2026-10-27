@@ -6,7 +6,8 @@
 
 | 交付物 | 位置 |
 |---|---|
-| 完整 MV | `exports/勿听_MV_1080p.mp4`（不入 git，体积大） |
+| 完整 MV（母版） | `exports/勿听_MV_1080p.mp4`（266MB，超出 GitHub 单文件 100MB 限制，不入 git） |
+| 完整 MV（预览版） | `exports/勿听_MV_720p_预览.mp4`（26MB，已入 git） |
 | 逐镜视频片段（38 个） | `video_clips/SH01.mp4` … `SH38.mp4`（不入 git） |
 | 分镜表（含时间码） | `storyboard/分镜表.md`、`storyboard/timeline.json`、`storyboard/分镜缩略图.jpg` |
 | 逐镜图生视频提示词 | `storyboard/图生视频提示词.md` |
@@ -15,7 +16,7 @@
 | 角色与场景资产 | `compositing/sprites/`、`compositing/plates/`（不入 git，可由脚本重建） |
 | 剪辑工程 | `edit/勿听_MV.edl`（CMX3600，可导入 Premiere / Resolve）、`edit/concat_list.txt`、`engine/render.py` |
 | 音频分析 | `reports/audio_analysis.json`、`reports/audio_analysis.png`、`reports/audio_foreground_spectrogram.png` |
-| 质检与问题清单 | `reports/` |
+| 质检与问题清单 | `reports/未解决问题清单.md`、`reports/QC_逐镜检查.json`、`reports/qc/转场中点.jpg`、`reports/制作记录.md` |
 
 ## 重建流程
 

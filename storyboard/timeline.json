@@ -75,8 +75,8 @@
    "dur": 6.595,
    "title": "一线",
    "trans": {
-    "type": "cut",
-    "dur": 0.0
+    "type": "silk_wipe",
+    "dur": 1.0
    }
   },
   {

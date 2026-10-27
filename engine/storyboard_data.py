@@ -62,7 +62,7 @@ SHOTS = [
          prompt_subject=TP, prompt_action="他停下脚步，缓慢回头望向身后，一缕银色蛛丝从他身前飘过",
          prompt_end="他的视线停在画外左侧"),
     dict(id="SH07", impl="紫蛛儿抬手（裁切）；指尖牵出的丝线带露珠；相机沿丝线横移约1150px", t=48.9, stage="一·尘世与相遇", title="一线", scene="留白宣纸", chars="紫蛛儿（手）",
-         size="特写", camera="沿丝线横移", trans=("cut", 0.0),
+         size="特写", camera="沿丝线横移", trans=("silk_wipe", 1.0),
          action="她抬手，指尖牵出的银丝向画外延伸，镜头沿丝线横移，丝线上露珠颤动",
          ink="丝线带晕光", color="墨与银白", music="器乐段",
          prompt_subject="紫蛛儿抬起的手与指尖牵出的银色蛛丝", prompt_action="镜头沿着蛛丝缓慢横移，丝线随风轻摆，露珠颤动",

@@ -42,7 +42,8 @@ def clip_qc(path):
         frames.append(f)
     d = np.array(diffs) if diffs else np.zeros(1)
     lj = np.abs(np.diff(lums)) if len(lums) > 1 else np.zeros(1)
-    bars = [f[:138].max() for f in frames[:: max(1, len(frames) // 5)]]
+    # ignore the 16 rows next to the picture: x264 macroblocks straddle the 138-px bar edge (invisible ringing)
+    bars = [max(f[:122].max(), f[958:].max()) for f in frames[:: max(1, len(frames) // 5)]]
     return frames, dict(frames=len(frames), mean_motion=round(float(d.mean()), 3), p95_motion=round(float(np.percentile(d, 95)), 3),
                         max_motion=round(float(d.max()), 3), frozen_runs=int(_longest_run(d < 0.03)),
                         max_luma_jump=round(float(lj.max()), 2), letterbox_clean=bool(max(bars) <= 2))

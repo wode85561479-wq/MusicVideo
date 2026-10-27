@@ -90,16 +90,11 @@ def blend(kind, A, B, p, seed=0, **kw):
         hl = (np.maximum(wave, 0) * 0.25)[..., None]
         return clamp01(A2 * (1 - m) + B2 * m + hl)
     if kind == "peel":
-        # mural flakes: cell mosaic where each flake flips to B at its own time; flake edges darken
-        cells = kw.get("cells", 28)
-        rng = np.random.default_rng(seed)
-        gh, gw = int(H / W * cells) + 2, cells + 2
-        thr = rng.random((gh, gw)).astype(np.float32)
-        thr_up = cv2.resize(thr, (W, H), interpolation=cv2.INTER_NEAREST)
-        n = _up(_noise(seed + 3, 12))
-        thr_up = clamp01(thr_up * 0.8 + n * 0.2)
-        m = smoothstep(thr_up - 0.02, thr_up + 0.02, p * 1.1 - 0.05)[..., None]
-        edge = clamp01(1 - np.abs(p * 1.1 - 0.05 - thr_up) / 0.04)[..., None]
+        # mural flakes: organic patches (noise threshold) flip to B one by one; a pale plaster rim at each edge
+        thr = _up(_noise(seed + 3, 26)) * 0.85 + 0.075
+        q = p * 1.08
+        m = smoothstep(thr - 0.015, thr + 0.015, q)[..., None]
+        edge = clamp01(1 - np.abs(q - thr) / 0.03)[..., None]
         out = A * (1 - m) + B * m
-        return out * (1 - 0.45 * edge)
+        return out * (1 - 0.5 * edge) + np.array([0.85, 0.78, 0.64], np.float32) * 0.25 * edge
     raise ValueError(kind)
