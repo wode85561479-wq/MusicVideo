@@ -9,3 +9,4 @@ exports/
 edit/picture_lock.mp4
 __pycache__/
 reports/previews/
+reports/render_log.txt
