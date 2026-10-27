@@ -1,0 +1,396 @@
+{
+ "ZZ_FRONT": {
+  "id": "ZZ_FRONT",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   60,
+   40,
+   545,
+   1365
+  ],
+  "factor": 1.6,
+  "size": [
+   677,
+   2000
+  ],
+  "trim_offset": [
+   53,
+   98
+  ]
+ },
+ "ZZ_SIDE": {
+  "id": "ZZ_SIDE",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   555,
+   45,
+   905,
+   1355
+  ],
+  "factor": 1.6,
+  "size": [
+   480,
+   1976
+  ],
+  "trim_offset": [
+   33,
+   87
+  ]
+ },
+ "ZZ_34A": {
+  "id": "ZZ_34A",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   945,
+   85,
+   1305,
+   775
+  ],
+  "factor": 2.0,
+  "size": [
+   507,
+   1342
+  ],
+  "trim_offset": [
+   56,
+   38
+  ]
+ },
+ "ZZ_34B": {
+  "id": "ZZ_34B",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   1310,
+   85,
+   1625,
+   775
+  ],
+  "factor": 2.0,
+  "size": [
+   552,
+   1341
+  ],
+  "trim_offset": [
+   34,
+   39
+  ]
+ },
+ "ZZ_FACE_FRONT": {
+  "id": "ZZ_FACE_FRONT",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   1760,
+   35,
+   2065,
+   432
+  ],
+  "factor": 3.0,
+  "size": [
+   915,
+   1077
+  ],
+  "trim_offset": [
+   0,
+   96
+  ]
+ },
+ "ZZ_FACE_SAD": {
+  "id": "ZZ_FACE_SAD",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   2160,
+   35,
+   2465,
+   432
+  ],
+  "factor": 3.0,
+  "size": [
+   845,
+   1087
+  ],
+  "trim_offset": [
+   40,
+   86
+  ]
+ },
+ "ZZ_FACE_TILT": {
+  "id": "ZZ_FACE_TILT",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   1765,
+   438,
+   2110,
+   832
+  ],
+  "factor": 3.0,
+  "size": [
+   889,
+   1115
+  ],
+  "trim_offset": [
+   96,
+   37
+  ]
+ },
+ "ZZ_BACK": {
+  "id": "ZZ_BACK",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   2165,
+   478,
+   2475,
+   1225
+  ],
+  "factor": 1.8,
+  "size": [
+   462,
+   1277
+  ],
+  "trim_offset": [
+   45,
+   32
+  ]
+ },
+ "ZZ_WALK": {
+  "id": "ZZ_WALK",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   915,
+   800,
+   1285,
+   1372
+  ],
+  "factor": 2.0,
+  "size": [
+   596,
+   1083
+  ],
+  "trim_offset": [
+   15,
+   40
+  ]
+ },
+ "ZZ_REACH": {
+  "id": "ZZ_REACH",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   1270,
+   790,
+   1640,
+   1372
+  ],
+  "factor": 2.0,
+  "size": [
+   657,
+   1101
+  ],
+  "trim_offset": [
+   24,
+   51
+  ]
+ },
+ "ZZ_SIT": {
+  "id": "ZZ_SIT",
+  "sheet": "REF_CH03_zizhuer_sheet.jpg",
+  "box": [
+   1610,
+   880,
+   2160,
+   1345
+  ],
+  "factor": 2.0,
+  "size": [
+   1065,
+   837
+  ],
+  "trim_offset": [
+   12,
+   6
+  ]
+ },
+ "TP_FRONT": {
+  "id": "TP_FRONT",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   0,
+   8,
+   392,
+   682
+  ],
+  "factor": 2.0,
+  "size": [
+   742,
+   1300
+  ],
+  "trim_offset": [
+   0,
+   1
+  ]
+ },
+ "TP_LEFT": {
+  "id": "TP_LEFT",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   365,
+   15,
+   548,
+   682
+  ],
+  "factor": 2.0,
+  "size": [
+   362,
+   1284
+  ],
+  "trim_offset": [
+   4,
+   0
+  ]
+ },
+ "TP_RIGHT": {
+  "id": "TP_RIGHT",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   538,
+   15,
+   745,
+   682
+  ],
+  "factor": 2.0,
+  "size": [
+   349,
+   1334
+  ],
+  "trim_offset": [
+   0,
+   0
+  ]
+ },
+ "TP_BACK": {
+  "id": "TP_BACK",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   728,
+   10,
+   1022,
+   682
+  ],
+  "factor": 2.0,
+  "size": [
+   573,
+   1266
+  ],
+  "trim_offset": [
+   0,
+   0
+  ]
+ },
+ "TP_FACE_FRONT": {
+  "id": "TP_FACE_FRONT",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   975,
+   0,
+   1268,
+   333
+  ],
+  "factor": 3.0,
+  "size": [
+   859,
+   985
+  ],
+  "trim_offset": [
+   0,
+   0
+  ]
+ },
+ "TP_FACE_SIDE": {
+  "id": "TP_FACE_SIDE",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   1028,
+   352,
+   1268,
+   656
+  ],
+  "factor": 3.0,
+  "size": [
+   696,
+   900
+  ],
+  "trim_offset": [
+   0,
+   0
+  ]
+ },
+ "TP_WALK": {
+  "id": "TP_WALK",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   325,
+   715,
+   548,
+   1012
+  ],
+  "factor": 3.0,
+  "size": [
+   476,
+   806
+  ],
+  "trim_offset": [
+   146,
+   0
+  ]
+ },
+ "TP_TURN": {
+  "id": "TP_TURN",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   545,
+   715,
+   742,
+   1012
+  ],
+  "factor": 3.0,
+  "size": [
+   476,
+   822
+  ],
+  "trim_offset": [
+   0,
+   0
+  ]
+ },
+ "TP_FIGHT2": {
+  "id": "TP_FIGHT2",
+  "sheet": "REF_CH02_tianpeng_human_sheet.png",
+  "box": [
+   955,
+   690,
+   1372,
+   984
+  ],
+  "factor": 3.0,
+  "size": [
+   1200,
+   862
+  ],
+  "trim_offset": [
+   0,
+   20
+  ]
+ },
+ "BJ_PORTRAIT": {
+  "id": "BJ_PORTRAIT",
+  "sheet": "REF_CH01_bajie_boar_portrait.jpg",
+  "box": null,
+  "factor": 1.0,
+  "size": [
+   1123,
+   1488
+  ],
+  "trim_offset": [
+   242,
+   0
+  ]
+ }
+}

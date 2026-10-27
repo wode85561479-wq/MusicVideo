@@ -1,0 +1,424 @@
+{
+ "song_end": 257.685,
+ "fps": 24,
+ "shots": [
+  {
+   "id": "SH01",
+   "start": 0.0,
+   "end": 9.451,
+   "dur": 9.451,
+   "title": "墨生",
+   "trans": {
+    "type": "fade_black",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH02",
+   "start": 9.451,
+   "end": 20.178,
+   "dur": 10.727,
+   "title": "云山古寺",
+   "trans": {
+    "type": "mist",
+    "dur": 2.0
+   }
+  },
+  {
+   "id": "SH03",
+   "start": 20.178,
+   "end": 27.585,
+   "dur": 7.407,
+   "title": "盘丝岭",
+   "trans": {
+    "type": "ink_bloom",
+    "dur": 1.6
+   }
+  },
+  {
+   "id": "SH04",
+   "start": 27.585,
+   "end": 33.971,
+   "dur": 6.386,
+   "title": "独行",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH05",
+   "start": 33.971,
+   "end": 41.332,
+   "dur": 7.361,
+   "title": "网后",
+   "trans": {
+    "type": "silk_wipe",
+    "dur": 1.0
+   }
+  },
+  {
+   "id": "SH06",
+   "start": 41.332,
+   "end": 48.924,
+   "dur": 7.592,
+   "title": "回首",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH07",
+   "start": 48.924,
+   "end": 55.519,
+   "dur": 6.595,
+   "title": "一线",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH08",
+   "start": 55.519,
+   "end": 62.624,
+   "dur": 7.105,
+   "title": "初见·镜湖",
+   "trans": {
+    "type": "mist",
+    "dur": 1.6
+   }
+  },
+  {
+   "id": "SH09",
+   "start": 62.624,
+   "end": 69.381,
+   "dur": 6.757,
+   "title": "她",
+   "trans": {
+    "type": "dissolve",
+    "dur": 0.8
+   }
+  },
+  {
+   "id": "SH10",
+   "start": 69.381,
+   "end": 75.256,
+   "dur": 5.875,
+   "title": "他",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH11",
+   "start": 75.256,
+   "end": 81.572,
+   "dur": 6.316,
+   "title": "同行",
+   "trans": {
+    "type": "ink_bloom",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH12",
+   "start": 81.572,
+   "end": 87.446,
+   "dur": 5.874,
+   "title": "云阶",
+   "trans": {
+    "type": "mist",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH13",
+   "start": 87.446,
+   "end": 95.597,
+   "dur": 8.151,
+   "title": "织",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH14",
+   "start": 95.597,
+   "end": 100.937,
+   "dur": 5.34,
+   "title": "承",
+   "trans": {
+    "type": "silk_wipe",
+    "dur": 1.0
+   }
+  },
+  {
+   "id": "SH15",
+   "start": 100.937,
+   "end": 108.321,
+   "dur": 7.384,
+   "title": "古窟",
+   "trans": {
+    "type": "ink_black",
+    "dur": 1.6
+   }
+  },
+  {
+   "id": "SH16",
+   "start": 108.321,
+   "end": 116.355,
+   "dur": 8.034,
+   "title": "近",
+   "trans": {
+    "type": "dissolve",
+    "dur": 1.2
+   }
+  },
+  {
+   "id": "SH17",
+   "start": 116.355,
+   "end": 123.205,
+   "dur": 6.85,
+   "title": "笑",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH18",
+   "start": 123.205,
+   "end": 131.82,
+   "dur": 8.615,
+   "title": "望月",
+   "trans": {
+    "type": "mist",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH19",
+   "start": 131.82,
+   "end": 138.205,
+   "dur": 6.385,
+   "title": "颤",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH20",
+   "start": 138.205,
+   "end": 143.824,
+   "dur": 5.619,
+   "title": "屏息",
+   "trans": {
+    "type": "ink_black",
+    "dur": 1.6
+   }
+  },
+  {
+   "id": "SH21",
+   "start": 143.824,
+   "end": 150.071,
+   "dur": 6.247,
+   "title": "山河着色",
+   "trans": {
+    "type": "water",
+    "dur": 1.6
+   }
+  },
+  {
+   "id": "SH22",
+   "start": 150.071,
+   "end": 157.083,
+   "dur": 7.012,
+   "title": "壁画",
+   "trans": {
+    "type": "dissolve",
+    "dur": 1.2
+   }
+  },
+  {
+   "id": "SH23",
+   "start": 157.083,
+   "end": 163.492,
+   "dur": 6.409,
+   "title": "相对",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH24",
+   "start": 163.492,
+   "end": 171.712,
+   "dur": 8.22,
+   "title": "丝桥",
+   "trans": {
+    "type": "mist",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH25",
+   "start": 171.712,
+   "end": 177.935,
+   "dur": 6.223,
+   "title": "山门",
+   "trans": {
+    "type": "ink_bloom",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH26",
+   "start": 177.935,
+   "end": 184.715,
+   "dur": 6.78,
+   "title": "鸦乱",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH27",
+   "start": 184.715,
+   "end": 191.309,
+   "dur": 6.594,
+   "title": "泪",
+   "trans": {
+    "type": "ink_bloom",
+    "dur": 1.2
+   }
+  },
+  {
+   "id": "SH28",
+   "start": 191.309,
+   "end": 196.278,
+   "dur": 4.969,
+   "title": "去",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH29",
+   "start": 196.278,
+   "end": 203.151,
+   "dur": 6.873,
+   "title": "断",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH30",
+   "start": 203.151,
+   "end": 209.723,
+   "dur": 6.572,
+   "title": "网破",
+   "trans": {
+    "type": "ink_bloom",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH31",
+   "start": 209.723,
+   "end": 214.738,
+   "dur": 5.015,
+   "title": "剥落",
+   "trans": {
+    "type": "dissolve",
+    "dur": 1.0
+   }
+  },
+  {
+   "id": "SH32",
+   "start": 214.738,
+   "end": 221.379,
+   "dur": 6.641,
+   "title": "雪夜",
+   "trans": {
+    "type": "peel",
+    "dur": 1.6
+   }
+  },
+  {
+   "id": "SH33",
+   "start": 221.379,
+   "end": 227.579,
+   "dur": 6.2,
+   "title": "老",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH34",
+   "start": 227.579,
+   "end": 234.289,
+   "dur": 6.71,
+   "title": "残影",
+   "trans": {
+    "type": "dissolve",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH35",
+   "start": 234.289,
+   "end": 240.814,
+   "dur": 6.525,
+   "title": "空湖",
+   "trans": {
+    "type": "mist",
+    "dur": 1.4
+   }
+  },
+  {
+   "id": "SH36",
+   "start": 240.814,
+   "end": 246.3,
+   "dur": 5.486,
+   "title": "余线",
+   "trans": {
+    "type": "cut",
+    "dur": 0.0
+   }
+  },
+  {
+   "id": "SH37",
+   "start": 246.3,
+   "end": 253.5,
+   "dur": 7.2,
+   "title": "墨归",
+   "trans": {
+    "type": "dissolve",
+    "dur": 1.6
+   }
+  },
+  {
+   "id": "SH38",
+   "start": 253.5,
+   "end": 257.685,
+   "dur": 4.185,
+   "title": "白",
+   "trans": {
+    "type": "dissolve",
+    "dur": 1.4
+   }
+  }
+ ]
+}

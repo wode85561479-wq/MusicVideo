@@ -1,0 +1,11 @@
+# large / regenerable
+models/
+audio/*.wav
+compositing/plates/
+compositing/sprites/*.png
+compositing/procedural/
+video_clips/
+exports/
+edit/picture_lock.mp4
+__pycache__/
+reports/previews/
