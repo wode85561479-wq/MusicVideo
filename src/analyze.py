@@ -11,6 +11,24 @@ import numpy as np
 FPS = 30
 
 
+def envelopes(y, sr, n_frames, hop=512):
+    """Loudness and low-frequency (drum/bass) energy per video frame, 0..1."""
+    rms = librosa.feature.rms(y=y, hop_length=hop)[0]
+    t_rms = librosa.frames_to_time(np.arange(len(rms)), sr=sr, hop_length=hop)
+    t_vid = np.arange(n_frames) / FPS
+    loud = np.interp(t_vid, t_rms, rms)
+    k = np.ones(15) / 15
+    loud = np.convolve(loud, k, mode="same")
+    loud = np.clip(loud / np.percentile(loud, 98), 0, 1)
+
+    S = np.abs(librosa.stft(y, hop_length=hop, n_fft=2048))
+    freqs = librosa.fft_frequencies(sr=sr, n_fft=2048)
+    low = S[freqs < 180].mean(axis=0)
+    low = np.interp(t_vid, t_rms[: len(low)], low)
+    low = np.clip(low / np.percentile(low, 98), 0, 1)
+    return loud, low
+
+
 def main(wav_path, out_path):
     y, sr = librosa.load(wav_path, sr=22050)
     dur = len(y) / sr
@@ -32,22 +50,8 @@ def main(wav_path, out_path):
     peaks = [p for p in peaks if env[p] > np.percentile(env, 92)]
     accents = librosa.frames_to_time(np.array(peaks, dtype=int), sr=sr, hop_length=hop)
 
-    # Loudness envelope per video frame, normalised to 0..1 and smoothed.
-    rms = librosa.feature.rms(y=y, hop_length=hop)[0]
-    t_rms = librosa.frames_to_time(np.arange(len(rms)), sr=sr, hop_length=hop)
     n_frames = int(np.ceil(dur * FPS))
-    t_vid = np.arange(n_frames) / FPS
-    loud = np.interp(t_vid, t_rms, rms)
-    k = np.ones(15) / 15
-    loud = np.convolve(loud, k, mode="same")
-    loud = np.clip(loud / np.percentile(loud, 98), 0, 1)
-
-    # Low-frequency energy (drum / bass hits) per video frame.
-    S = np.abs(librosa.stft(y, hop_length=hop, n_fft=2048))
-    freqs = librosa.fft_frequencies(sr=sr, n_fft=2048)
-    low = S[freqs < 180].mean(axis=0)
-    low = np.interp(t_vid, t_rms[: len(low)], low)
-    low = np.clip(low / np.percentile(low, 98), 0, 1)
+    loud, low = envelopes(y, sr, n_frames)
 
     # Section boundaries from beat-synchronous chroma + MFCC clustering.
     chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=hop)

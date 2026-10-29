@@ -541,11 +541,15 @@ class Climax(Scene):
         self.petals = Drifters(petal_rots, spawns, rng, life=8, wind=150, fall=(30, 70),
                                sway=(20, 50))
         self.cal = Calligraphy(rng, "山水有清音", 118)
-        acc = self.m.between(self.m.accents, T_OUT + 1.5, 240)
-        start = acc[0] if acc else T_OUT + 2
-        self.cal_t = [start + i * 1.65 for i in range(5)]
+        # One character every two beats from the first bar line of the coda,
+        # the seal on the downbeat after the last one (the score's guzheng
+        # notes and gong sit on the same beats).
+        beats = self.m.beats
+        start = next(d for d in self.m.downbeats if d >= T_OUT + 1.5)
+        bi = int(np.argmin(np.abs(beats - start)))
+        self.cal_t = [float(beats[bi + 2 * i]) for i in range(5)]
         self.seal = make_seal(rng, "清音", 120)
-        self.seal_t = self.cal_t[-1] + 2.4
+        self.seal_t = float(beats[bi + 12])
 
     def outro_fade(self, t):
         return ease((t - T_OUT) / 11.0) * 0.86
