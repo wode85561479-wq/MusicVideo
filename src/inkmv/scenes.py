@@ -186,7 +186,7 @@ class River(Scene):
                                 self.boat.ax, self.boat.a.shape[0] - self.boat.ay)
         self.reed_rots = []
         for k in range(2):
-            reeds = make_reeds(rng, 470 if k == 0 else 380, n=13 if k == 0 else 9)
+            reeds = make_reeds(rng, 430 if k == 0 else 360, n=13 if k == 0 else 9)
             self.reed_rots.append(RotSet(reeds, np.linspace(-4, 4, 9)))
         self.reed_pos = []
         rw = W + int(cm * 1.5) + 400
@@ -214,7 +214,7 @@ class River(Scene):
         self.birds = Flock(bird, self.m, members)
 
     def boat_pos(self, t):
-        return 1520 - 17 * (t - T_B), self.HZ + 300 + 3 * np.sin(t * 1.25)
+        return 1520 - 17 * (t - T_B), self.HZ + 215 + 3 * np.sin(t * 1.25)
 
     def render(self, t):
         self.ensure()
@@ -247,7 +247,8 @@ class River(Scene):
             sx = x - (self.reed_X0 - cam * 1.5)
             if -400 < sx < W + 400:
                 ang = wind * np.sin(t * 1.4 + ph) * 3.5
-                over(D, R, self.reed_rots[k].get(ang), sx, H + 6)
+                # Sunk below the frame edge so the reeds pass under the boat.
+                over(D, R, self.reed_rots[k].get(ang), sx, H + (170 if k == 0 else 110))
         return D, R
 
 
