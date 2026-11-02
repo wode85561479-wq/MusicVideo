@@ -10,7 +10,10 @@ const fs = require('fs'), path = require('path');
   page.on('pageerror', e => { console.error('[pageerror]', e.message); });
   await page.goto('file://' + path.resolve(__dirname, 'index.html'));
   await page.evaluate(() => MV.init());
-  if (mode === 'stills') {
+  if (mode === 'scene') {
+    const [name, ...ts] = rest;
+    for (const t of ts) { const d = await page.evaluate(([n, t]) => MV.sceneStill(n, parseFloat(t)), [name, t]); fs.writeFileSync(path.join(outdir, `${name}_${t}.png`), Buffer.from(d.split(',')[1], 'base64')); console.log('scene', name, t); }
+  } else if (mode === 'stills') {
     for (const ts of rest) {
       const t = parseFloat(ts); const t0 = Date.now();
       const d = await page.evaluate(t => MV.still(t), t);

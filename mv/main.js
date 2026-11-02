@@ -56,7 +56,7 @@ const CLOCK = [
 ];
 const CHAPTERS = [[0, 'I', '清晨'], [91.44, 'II', '早高峰'], [143.46, 'III', '工位'], [202.58, 'IV', '循环'], [252.85, 'V', '如果有一天'], [309.44, 'VI', '继续走'], [391.2, '', '']];
 
-let cv, ctx, bufA, gA, bufB, gB, bl1, gb1, bl2, gb2;
+let cv, ctx, bufA, gA, bufB, gB, bl0, gb0, bl1, gb1, bl2, gb2;
 const MV = {
   async init() {
     const fonts = ['500 40px Serif', '300 40px Serif', '700 40px Serif', '300 20px Sans', '400 20px Sans', '300 20px Mono', '500 20px Mono', 'italic 400 20px Garamond'];
@@ -64,7 +64,7 @@ const MV = {
     AUD = window.AUDIO; initGrain();
     cv = document.getElementById('c'); ctx = cv.getContext('2d');
     bufA = mk(W, H); gA = bufA.getContext('2d'); bufB = mk(W, H); gB = bufB.getContext('2d');
-    bl1 = mk(480, 270); gb1 = bl1.getContext('2d'); bl2 = mk(160, 90); gb2 = bl2.getContext('2d');
+    bl0 = mk(480, 270); gb0 = bl0.getContext('2d', { willReadFrequently: true }); bl1 = mk(480, 270); gb1 = bl1.getContext('2d'); bl2 = mk(160, 90); gb2 = bl2.getContext('2d');
     return true;
   },
   frame(f, q = 0.94) { renderAt(f / FPS); return cv.toDataURL('image/jpeg', q); },
@@ -119,9 +119,19 @@ function renderAt(t) {
 function post(t) {
   const g = ctx;
   // bloom / halation
-  gb1.filter = 'brightness(0.85) contrast(2.4) blur(5px)'; gb1.globalCompositeOperation = 'copy'; gb1.drawImage(cv, 0, 0, 480, 270);
-  gb2.filter = 'blur(4px)'; gb2.globalCompositeOperation = 'copy'; gb2.drawImage(bl1, 0, 0, 160, 90);
-  g.globalCompositeOperation = 'screen'; g.globalAlpha = 0.28; g.drawImage(bl1, 0, 0, W, H); g.globalAlpha = 0.22; g.drawImage(bl2, 0, 0, W, H);
+  const shp = (SHOTS[shotAt(t)] || { p: {} }).p;
+  const bs = shp.bloom ?? 1, th = shp.bloomTh ?? 0.62;
+  // true threshold bloom on a small copy
+  gb0.globalCompositeOperation = 'copy'; gb0.drawImage(cv, 0, 0, 480, 270);
+  const id = gb0.getImageData(0, 0, 480, 270), d = id.data, inv1 = 1 / (1 - th);
+  for (let i = 0; i < d.length; i += 4) {
+    const m = Math.max(d[i], d[i + 1], d[i + 2]) / 255; let k = (m - th) * inv1; if (k <= 0) { d[i] = d[i + 1] = d[i + 2] = 0; continue; } k = k * k;
+    d[i] *= k; d[i + 1] *= k; d[i + 2] *= k;
+  }
+  gb0.putImageData(id, 0, 0);
+  gb1.filter = 'blur(4px)'; gb1.globalCompositeOperation = 'copy'; gb1.drawImage(bl0, 0, 0);
+  gb2.filter = 'blur(5px)'; gb2.globalCompositeOperation = 'copy'; gb2.drawImage(bl0, 0, 0, 160, 90);
+  g.globalCompositeOperation = 'screen'; g.globalAlpha = Math.min(1, 0.85 * bs); g.drawImage(bl1, 0, 0, W, H); g.globalAlpha = Math.min(1, 0.7 * bs); g.drawImage(bl2, 0, 0, W, H);
   g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
   // gentle filmic grade: lift blacks a touch toward blue, warm highlights
   g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(6,8,14,1)'; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over';
@@ -202,3 +212,9 @@ function drawLyrics(g, t) {
     g.restore();
   }
 }
+// debug: render a single scene at local time
+MV.sceneStill = function (name, lt, p = {}) {
+  const sh = { i: -1, s: 0, e: 999, d: 30, sc: name, p, tin: ['cut'] };
+  renderShot(gA, sh, lt); ctx.drawImage(bufA, 0, 0); post(lt + 100);
+  return cv.toDataURL('image/png');
+};

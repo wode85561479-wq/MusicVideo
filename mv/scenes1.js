@@ -128,7 +128,10 @@ SCENES.bedroom = {
     const z = 1 + 0.075 * eio(clamp(lt / 22));
     g.translate(930, 560); g.scale(z, z); g.translate(-930, -560);
     // wall
-    vgrad(g, -60, -60, W + 120, H + 60, [[0, '#06080f'], [0.55, '#0b0f1c'], [1, '#090c16']]);
+    vgrad(g, -60, -60, W + 120, H + 60, [[0, '#121726'], [0.55, '#1a2032'], [1, '#161b2a']]);
+    // warm bedside lamp pool on the wall
+    glow(g, 110, 600, 900, '#ffb070', 0.30, 'screen', 0.55);
+    glow(g, 110, 640, 380, '#ffc890', 0.30, 'screen', 0.6);
     const wx = 1010, wy = 196, ww = 640, wh = 524, floorY = 846;
     // window spill on wall
     glow(g, wx + ww / 2, wy + wh * 0.55, 820, '#30436f', 0.26, 'screen', 0.6);
@@ -160,21 +163,23 @@ SCENES.bedroom = {
     for (let i = 0; i < 6; i++) { g.fillStyle = `rgba(80,100,150,${0.05 + 0.04 * (i % 2)})`; g.fillRect(wx + ww - 22 + i * 30, wy - 40, 3, floorY - wy + 40); }
     g.fillStyle = '#020308'; g.fillRect(wx - 120, wy - 52, ww + 360, 8); // rod
     // floor
-    vgrad(g, -60, floorY, W + 120, H + 60, [[0, '#080a13'], [1, '#04050a']]);
+    vgrad(g, -60, floorY, W + 120, H + 60, [[0, '#1a1c25'], [1, '#0f1118']]);
+    glow(g, 200, floorY + 20, 520, '#ffae6a', 0.16, 'screen');
     g.fillStyle = 'rgba(90,110,160,0.12)'; g.fillRect(-60, floorY, W + 120, 1.5);
     // light patch on floor
     g.save(); g.globalCompositeOperation = 'screen'; g.drawImage(c.patch, 0, 0, W, H); g.restore();
     // picture frame on wall
-    g.fillStyle = '#05070d'; g.fillRect(360, 330, 250, 170); g.fillStyle = 'rgba(80,96,140,0.10)'; g.fillRect(372, 342, 226, 146);
-    g.strokeStyle = 'rgba(110,130,180,0.10)'; g.lineWidth = 1.5; g.strokeRect(360, 330, 250, 170);
+    g.fillStyle = '#2a2622'; g.fillRect(360, 330, 250, 170); const pg = g.createLinearGradient(372, 342, 598, 488); pg.addColorStop(0, '#6d6a72'); pg.addColorStop(0.6, '#8a7a6c'); pg.addColorStop(1, '#4a4652'); g.fillStyle = pg; g.fillRect(372, 342, 226, 146);
+    g.fillStyle = 'rgba(40,36,40,0.55)'; g.beginPath(); g.moveTo(372, 470); g.lineTo(450, 410); g.lineTo(510, 445); g.lineTo(560, 400); g.lineTo(598, 430); g.lineTo(598, 488); g.lineTo(372, 488); g.fill();
+    glow(g, 470, 380, 70, '#ffe0b0', 0.25, 'screen');
     // bed
     const bx0 = 170, bx1 = 960, top = 706;
-    g.fillStyle = '#030409'; rrect(g, bx0 - 46, 520, 50, floorY - 520, [10, 10, 0, 0]); g.fill(); g.fillStyle = 'rgba(100,120,170,0.12)'; g.fillRect(bx0 + 2, 530, 1.5, floorY - 540); // headboard
-    g.fillStyle = '#04060c'; g.fillRect(bx0, top + 58, bx1 - bx0, floorY - top - 58); // base
-    const mg = g.createLinearGradient(bx0, 0, bx1, 0); mg.addColorStop(0, '#0a0d18'); mg.addColorStop(1, '#151b2d');
+    g.fillStyle = '#3a312a'; rrect(g, bx0 - 46, 520, 50, floorY - 520, [10, 10, 0, 0]); g.fill(); g.fillStyle = 'rgba(255,190,130,0.35)'; g.fillRect(bx0 - 46, 528, 2, floorY - 540); // headboard
+    g.fillStyle = '#2a2420'; g.fillRect(bx0, top + 58, bx1 - bx0, floorY - top - 58); g.fillStyle = 'rgba(0,0,0,0.35)'; g.fillRect(bx0, floorY - 10, bx1 - bx0, 10); // base
+    const mg = g.createLinearGradient(bx0, 0, bx1, 0); mg.addColorStop(0, '#5a5550'); mg.addColorStop(1, '#3a3e4c');
     g.fillStyle = mg; rrect(g, bx0, top, bx1 - bx0, 64, 8); g.fill();
     // pillow
-    g.fillStyle = '#121729'; rrect(g, bx0 + 14, top - 52, 190, 58, 26); g.fill();
+    g.fillStyle = '#9a948e'; rrect(g, bx0 + 14, top - 52, 190, 58, 26); g.fill(); g.fillStyle = 'rgba(255,190,120,0.25)'; rrect(g, bx0 + 14, top - 52, 190, 26, 20); g.fill();
     // duvet (rumpled)
     g.beginPath(); g.moveTo(bx0 + 150, top + 104);
     g.bezierCurveTo(bx0 + 110, top + 40, bx0 + 150, top - 30, bx0 + 260, top - 22);
@@ -182,24 +187,28 @@ SCENES.bedroom = {
     g.bezierCurveTo(bx0 + 520, top - 38, bx0 + 560, top - 8, bx0 + 620, top - 12);
     g.bezierCurveTo(bx1 - 150, top - 16, bx1 - 120, top + 30, bx1 - 150, top + 100);
     g.closePath();
-    const dg = g.createLinearGradient(0, top - 50, 0, top + 104); dg.addColorStop(0, '#1a2034'); dg.addColorStop(0.35, '#121729'); dg.addColorStop(1, '#0a0d18'); g.fillStyle = dg; g.fill();
-    const dg2 = g.createLinearGradient(bx0, 0, bx1, 0); dg2.addColorStop(0, 'rgba(0,0,0,0.35)'); dg2.addColorStop(1, 'rgba(70,90,140,0.10)'); g.fillStyle = dg2; g.fill();
+    const dg = g.createLinearGradient(0, top - 50, 0, top + 104); dg.addColorStop(0, '#8c8a90'); dg.addColorStop(0.35, '#6c6a74'); dg.addColorStop(1, '#3c3d48'); g.fillStyle = dg; g.fill();
+    const dg2 = g.createLinearGradient(bx0, 0, bx1, 0); dg2.addColorStop(0, 'rgba(255,170,100,0.28)'); dg2.addColorStop(0.6, 'rgba(0,0,0,0.15)'); dg2.addColorStop(1, 'rgba(80,100,160,0.18)'); g.fillStyle = dg2; g.fill();
     // fold shadows
-    g.strokeStyle = 'rgba(0,0,0,0.35)'; g.lineWidth = 3; g.beginPath(); g.moveTo(bx0 + 380, top - 30); g.quadraticCurveTo(bx0 + 420, top + 30, bx0 + 400, top + 98); g.moveTo(bx0 + 560, top - 12); g.quadraticCurveTo(bx0 + 600, top + 40, bx0 + 640, top + 96); g.stroke();
+    g.strokeStyle = 'rgba(0,0,0,0.12)'; g.lineWidth = 4; g.beginPath(); g.moveTo(bx0 + 380, top - 30); g.quadraticCurveTo(bx0 + 420, top + 30, bx0 + 400, top + 98); g.moveTo(bx0 + 560, top - 12); g.quadraticCurveTo(bx0 + 600, top + 40, bx0 + 640, top + 96); g.stroke();
     g.fillStyle = 'rgba(120,140,195,0.18)'; g.fillRect(bx1 - 150, top, 150, 1.5);
     // nightstand + clock
-    g.fillStyle = '#04050a'; g.fillRect(20, 712, 140, floorY - 712); g.fillStyle = 'rgba(255,120,60,0.06)'; g.fillRect(20, 712, 140, 2);
+    g.fillStyle = '#2b2520'; g.fillRect(20, 712, 140, floorY - 712); g.fillStyle = 'rgba(255,200,140,0.35)'; g.fillRect(20, 712, 140, 3); g.fillStyle = 'rgba(0,0,0,0.3)'; g.fillRect(28, 760, 124, 2);
+    // lamp
+    g.fillStyle = '#3a3330'; g.fillRect(132, 640, 6, 72); g.fillRect(118, 706, 34, 6);
+    g.fillStyle = '#f3d6ad'; g.beginPath(); g.moveTo(108, 640); g.lineTo(162, 640); g.lineTo(152, 588); g.lineTo(118, 588); g.closePath(); g.fill();
+    glow(g, 135, 640, 240, '#ffbe7a', 0.45); glow(g, 135, 615, 60, '#fff0d8', 0.7);
     const m = hudMin(t);
     g.fillStyle = '#020306'; rrect(g, 46, 668, 92, 44, 6); g.fill();
     seg7time(g, Math.floor(m / 60), m % 60, 58, 678, 18, '#ff6a3d', 0.95, (t % 1) < 0.5 ? 1 : 0);
     glow(g, 92, 690, 150, '#ff5a2a', 0.16); glow(g, 92, 712, 60, '#ff7a3a', 0.1);
     // figure on bed edge
     const br = Math.sin(t * 1.25);
-    const info = drawFigure(g, { x: 900, y: floorY, h: 500, pose: 'sit', view: 'side', facing: 1, lean: 0.5 + 0.012 * br, headDown: 0.48 + 0.02 * Math.sin(t * 0.4), hair: 'short', color: '#020309', rim: { c: 'rgba(120,145,205,0.55)', dx: 2.6, dy: -0.8 } });
-    // faint window light on face/shoulder
-    glow(g, info.face[0] + 8, info.face[1], 60, '#5a73b0', 0.06, 'screen');
+    g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(1020, floorY + 4, 120, 10, 0, 0, TAU); g.fill();
+    const info = drawFigure(g, { x: 900, y: floorY, h: 500, pose: 'sit', view: 'side', facing: 1, lean: 0.5 + 0.012 * br, headDown: 0.46 + 0.02 * Math.sin(t * 0.4), outfit: OUTFITS.protHome,
+      light: { amb: [128, 132, 156], key: [255, 186, 120], keyA: 0.42, dir: [-1, -0.25], rim: [160, 185, 245], rimA: 0.55, rimDir: [1, -0.35], rimW: 0.006, shadowA: 0.25, footA: 0.2 } });
     // dust in window light
     dust(g, t, 60, 12, [wx - 360, wy, ww + 300, floorY - wy], '#9fb2e0', 0.22, 2.0, (x, y) => clamp(1 - Math.abs(x - (wx + ww / 2 - (y - wy) * 0.4)) / 520));
-    glow(g, 92, 640, 420, '#ff6a33', 0.05, 'screen');
+
   }
 };
