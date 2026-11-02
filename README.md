@@ -20,7 +20,7 @@ python3 mv/make_lut.py                               # ARRI-style LUT
 node mv/render.js frames full 0 9523                 # or mv/render_all.sh <k> <n> <dir> for parallel workers
 ffmpeg -framerate 24 -i full/f_%06d.jpg -i song.m4a \
   -vf lut3d=file=work/arri_look.cube:interp=tetrahedral \
-  -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p -c:a aac -b:a 256k -shortest mv.mp4
+  -c:v libx264 -preset medium -crf 20 -pix_fmt yuv420p -c:a aac -b:a 256k -shortest mv.mp4
 ```
 
 Fonts are expected in `../fonts`: Noto Serif SC, Noto Sans SC, JetBrains Mono and Cormorant Garamond from Google Fonts.
