@@ -8,7 +8,7 @@ Everything is procedural: it is drawn frame by frame with HTML Canvas in headles
 - Cinematic flat illustration. The frame is 2.39:1 letterboxed and the characters are clothed and shaded, with rim light and cast shadows.
 - Lighting follows the time of day: pre-dawn blue, a bright morning, white office daylight, a warm sunset, a dark late night, a golden dream afternoon, and finally sunrise.
 - The final encode applies an ARRI-inspired 3D LUT (`mv/arri_look.cube`): soft highlight roll-off, a gentle toe, natural skin tones, olive greens and cool shadows.
-- Lyrics are burned in, in Noto Serif SC, with a per-character reveal. They are timed from the song's embedded Suno lyric track. `mv/lyrics.srt` is the same text as a plain subtitle file.
+- Lyrics are burned into the picture near the bottom edge, in Noto Serif SC. Characters fade in one by one, then dissolve in a soft left-to-right gradient wipe. They are timed from the song's embedded Suno lyric track. `mv/lyrics.srt` is the same text as a plain subtitle file.
 - The HUD shows a story clock (top left) and the chapter (top right): 清晨 → 早高峰 → 工位 → 循环 → 如果有一天 → 继续走.
 
 ## Rendering

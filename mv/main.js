@@ -188,28 +188,38 @@ function drawHUD(g, t) {
 
 function drawLyrics(g, t) {
   const Ls = window.LYRICS;
+  // soft dark gradient at the bottom of the picture while lyrics are on screen (readability)
+  let pres = 0;
+  for (const L of Ls) { if (t < L.ds - 0.6 || t > L.de + 0.8) continue; pres = Math.max(pres, ss(L.ds - 0.5, L.ds, t) * (1 - ss(L.de, L.de + 0.7, t))); }
+  if (pres > 0.001) {
+    const gr = g.createLinearGradient(0, IB - 260, 0, IB);
+    gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(0.5, `rgba(0,0,0,${0.2 * pres})`); gr.addColorStop(1, `rgba(0,0,0,${0.46 * pres})`);
+    g.fillStyle = gr; g.fillRect(0, IB - 260, W, 260);
+  }
   for (const L of Ls) {
     if (t < L.ds - 0.05 || t > L.de + 0.05) continue;
     const main = !L.echo;
-    const font = main ? '500 41px Serif' : '300 33px Serif';
-    const ls = main ? 5 : 9;
+    const font = main ? '500 44px Serif' : '300 35px Serif';
+    const ls = main ? 6 : 10;
     g.save(); g.font = font; g.textBaseline = 'alphabetic'; g.textAlign = 'left'; g.letterSpacing = '0px';
-    // layout: parts joined by gap
-    const items = []; let x = 0; const gap = main ? 30 : 34;
+    const items = []; let x = 0; const gap = main ? 32 : 36;
     L.parts.forEach((p, pi) => {
       if (pi > 0) x += gap;
-      const chars = [...p.text];
-      chars.forEach((ch, ci) => { const w = g.measureText(ch).width; items.push({ ch, x, w, t0: p.t + ci * (main ? 0.045 : 0.07) }); x += w + ls; });
+      [...p.text].forEach((ch, ci) => { const w = g.measureText(ch).width; items.push({ ch, x, w, t0: p.t + ci * (main ? 0.045 : 0.07) }); x += w + ls; });
       x -= ls;
     });
-    const total = x, x0 = W / 2 - total / 2, y = H - BAR / 2 + 15;
-    const fo = 1 - ss(L.de - 0.28, L.de, t);
-    const col = main ? [238, 232, 222] : [220, 214, 204];
-    g.shadowColor = main ? 'rgba(255,214,170,0.22)' : 'rgba(0,0,0,0)'; g.shadowBlur = 16;
+    const total = Math.max(1, x), x0 = W / 2 - total / 2, y = IB - 64;
+    // exit: a soft gradient wipe sweeping left -> right, characters drifting up as they dissolve
+    const wd = clamp((L.de - L.ds) * 0.38, 0.32, 0.75), ws = L.de - wd;
+    const col = main ? [244, 238, 228] : [228, 222, 212];
+    g.shadowColor = 'rgba(0,0,0,0.72)'; g.shadowBlur = 18; g.shadowOffsetY = 2;
     for (const it of items) {
-      const a = ss(it.t0, it.t0 + (main ? 0.38 : 0.6), t) * fo * (main ? 1 : 0.62);
+      const u = (it.x + it.w / 2) / total;
+      const o0 = ws + u * wd * 0.55, o1 = o0 + wd * 0.45;
+      const out = ss(o0, o1, t);
+      const a = ss(it.t0, it.t0 + (main ? 0.36 : 0.6), t) * (1 - out) * (main ? 1 : 0.68);
       if (a <= 0.003) continue;
-      const yo = (1 - eo(inv(it.t0, it.t0 + 0.5, t))) * 9;
+      const yo = (1 - eo(inv(it.t0, it.t0 + 0.5, t))) * 10 - out * 9;
       g.fillStyle = rgba(col, a); g.fillText(it.ch, x0 + it.x, y + yo);
     }
     g.restore();
