@@ -7,7 +7,7 @@ function buildStreetStrip(seed, SW, base) {
   const r = mulberry32(seed);
   const cv = mk(SW, base + 10), g = cv.getContext('2d');
   const pal = ['#cbbfac', '#bdb6a9', '#ada79d', '#cdc6b7', '#ab9786', '#a1a8a3', '#d6d0c4', '#b9ab9b', '#959ca0', '#c2b19d'];
-  const blds = [], gaps = [];
+  const blds = [], gaps = [], wins = [];
   let x = -40;
   while (x < SW) {
     const w = lerp(330, 640, r()), floors = 3 + (r() * 4 | 0), fh = lerp(102, 118, r()), gh = 156;
@@ -31,7 +31,7 @@ function buildStreetStrip(seed, SW, base) {
         const gl = g.createLinearGradient(0, wy, 0, wy + wh); const k = r();
         if (k < 0.12) { gl.addColorStop(0, '#e8c48e'); gl.addColorStop(1, '#b98d5c'); }
         else { gl.addColorStop(0, '#a9bfd4'); gl.addColorStop(0.5, '#6d7f93'); gl.addColorStop(1, '#465363'); }
-        g.fillStyle = gl; g.fillRect(wx, wy, ww, wh);
+        g.fillStyle = gl; g.fillRect(wx, wy, ww, wh); wins.push([wx, wy, ww, wh, r()]);
         if (k > 0.55) { g.fillStyle = `rgba(235,230,220,${0.35 + r() * 0.3})`; g.fillRect(wx + (r() < 0.5 ? 0 : ww * 0.55), wy, ww * 0.45, wh); }
         g.fillStyle = 'rgba(255,255,255,0.65)'; g.fillRect(wx + ww / 2 - 1.5, wy, 3, wh); g.fillRect(wx, wy + wh * 0.35, ww, 2);
         g.fillStyle = 'rgba(0,0,0,0.25)'; g.fillRect(wx - 5, wy + wh + 5, ww + 10, 4);
@@ -69,13 +69,13 @@ function buildStreetStrip(seed, SW, base) {
       g.fillStyle = 'rgba(0,0,0,0.13)'; for (let q = dy; q < dy + dh * (1 - up); q += 6) g.fillRect(sx, q, sw, 1.5);
       g.fillStyle = 'rgba(255,255,255,0.18)'; g.fillRect(sx, dy, sw, 2);
     }
-    blds.push({ x, w, top });
+    blds.push({ x, w, top, sx, sy, sw, gh, dy, dh, open });
     x += w;
     if (r() < 0.38) { const gw = lerp(36, 90, r()); gaps.push([x, gw]); // alley
       const ag = g.createLinearGradient(0, top, 0, base); ag.addColorStop(0, 'rgba(70,78,92,0)'); ag.addColorStop(0.3, 'rgba(70,78,92,0.85)'); ag.addColorStop(1, '#3b414c');
       g.fillStyle = ag; g.fillRect(x, top + 60, gw, base - top - 60); x += gw; }
   }
-  return { cv, blds, gaps };
+  return { cv, blds, gaps, wins };
 }
 function drawPlaneTree(g, x, baseY, s, seed, lightA) {
   const r = mulberry32(seed);

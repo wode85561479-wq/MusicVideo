@@ -130,16 +130,16 @@ SCENES.bedroom = {
     // wall
     vgrad(g, -60, -60, W + 120, H + 60, [[0, '#121726'], [0.55, '#1a2032'], [1, '#161b2a']]);
     // warm bedside lamp pool on the wall
-    glow(g, 110, 600, 900, '#ffb070', 0.30, 'screen', 0.55);
-    glow(g, 110, 640, 380, '#ffc890', 0.30, 'screen', 0.6);
+    if (!blinds) { glow(g, 110, 600, 900, '#ffb070', 0.30, 'screen', 0.55); glow(g, 110, 640, 380, '#ffc890', 0.30, 'screen', 0.6); }
+    else { g.save(); g.globalCompositeOperation = 'screen'; g.fillStyle = 'rgba(150,165,190,0.55)'; g.fillRect(-60, -60, W + 120, H + 120); g.restore(); }
     const wx = 1010, wy = 196, ww = 640, wh = 524, floorY = 846;
     // window spill on wall
-    glow(g, wx + ww / 2, wy + wh * 0.55, 820, '#30436f', 0.26, 'screen', 0.6);
+    glow(g, wx + ww / 2, wy + wh * 0.55, 820, blinds ? '#cfdcf0' : '#30436f', blinds ? 0.45 : 0.26, 'screen', 0.6);
     // ---- outside
     g.save(); g.beginPath(); g.rect(wx, wy, ww, wh); g.clip();
-    const sk = skyCols('predawn', 'bluehour', 0.25 + 0.5 * p);
+    const sk = blinds ? skyCols('morning', 'day', 0.3) : skyCols('predawn', 'bluehour', 0.25 + 0.5 * p);
     drawSky(g, wy - 20, wy + wh + 10, sk, wx, ww);
-    drawStars(g, c.stars, t, 0.7 * (1 - p * 0.6));
+    if (!blinds) drawStars(g, c.stars, t, 0.7 * (1 - p * 0.6));
     glow(g, wx + ww * 0.35, wy + wh, 520, '#c08868', 0.16 + 0.08 * p, 'screen');
     const cx = wx - 50 - lt * 1.2;
     g.drawImage(c.cityFar.sil, cx, wy + wh - 360 + 30); g.drawImage(c.cityFar.win, cx, wy + wh - 360 + 30);
@@ -197,7 +197,7 @@ SCENES.bedroom = {
     // lamp
     g.fillStyle = '#3a3330'; g.fillRect(132, 640, 6, 72); g.fillRect(118, 706, 34, 6);
     g.fillStyle = '#f3d6ad'; g.beginPath(); g.moveTo(108, 640); g.lineTo(162, 640); g.lineTo(152, 588); g.lineTo(118, 588); g.closePath(); g.fill();
-    glow(g, 135, 640, 240, '#ffbe7a', 0.45); glow(g, 135, 615, 60, '#fff0d8', 0.7);
+    if (!blinds) { glow(g, 135, 640, 240, '#ffbe7a', 0.45); glow(g, 135, 615, 60, '#fff0d8', 0.7); }
     const m = hudMin(t);
     g.fillStyle = '#020306'; rrect(g, 46, 668, 92, 44, 6); g.fill();
     seg7time(g, Math.floor(m / 60), m % 60, 58, 678, 18, '#ff6a3d', 0.95, (t % 1) < 0.5 ? 1 : 0);
@@ -206,7 +206,14 @@ SCENES.bedroom = {
     const br = Math.sin(t * 1.25);
     g.fillStyle = 'rgba(0,0,0,0.35)'; g.beginPath(); g.ellipse(1020, floorY + 4, 120, 10, 0, 0, TAU); g.fill();
     const info = drawFigure(g, { x: 900, y: floorY, h: 500, pose: 'sit', view: 'side', facing: 1, lean: 0.5 + 0.012 * br, headDown: 0.46 + 0.02 * Math.sin(t * 0.4), outfit: OUTFITS.protHome,
-      light: { amb: [128, 132, 156], key: [255, 186, 120], keyA: 0.42, dir: [-1, -0.25], rim: [160, 185, 245], rimA: 0.55, rimDir: [1, -0.35], rimW: 0.006, shadowA: 0.25, footA: 0.2 } });
+      light: blinds ? { amb: [215, 220, 232], key: [255, 250, 240], keyA: 0.35, dir: [1, -0.3], rim: [255, 250, 240], rimA: 0.6, rimW: 0.006, shadowA: 0.3 }
+        : { amb: [128, 132, 156], key: [255, 186, 120], keyA: 0.42, dir: [-1, -0.25], rim: [160, 185, 245], rimA: 0.55, rimDir: [1, -0.35], rimW: 0.006, shadowA: 0.25, footA: 0.2 } });
+    if (blinds) { // venetian blinds: slats over the window + striped light across the room
+      for (let y = wy; y < wy + wh; y += 26) { g.fillStyle = 'rgba(232,230,224,0.92)'; g.fillRect(wx, y, ww, 15); g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(wx, y + 13, ww, 2); }
+      g.save(); g.globalCompositeOperation = 'screen';
+      for (let i = 0; i < 14; i++) { const y0 = 230 + i * 40; g.fillStyle = 'rgba(255,246,228,0.16)'; poly(g, [[wx - 40, y0], [wx - 40, y0 + 14], [80, y0 + 260], [80, y0 + 246]]); g.fill(); }
+      g.restore();
+    }
     // dust in window light
     dust(g, t, 60, 12, [wx - 360, wy, ww + 300, floorY - wy], '#9fb2e0', 0.22, 2.0, (x, y) => clamp(1 - Math.abs(x - (wx + ww / 2 - (y - wy) * 0.4)) / 520));
 

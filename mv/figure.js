@@ -84,8 +84,8 @@ function sideJoints(o) {
     if (pose === 'walk') {
       arms = [0, 1].map(k => { const G = gait(p + k * 0.5); const ua = -(G.hip - 7 * D2R) * 0.62; return { ua, fa: ua + (14 + 16 * Math.max(0, ua / 0.2)) * D2R }; });
       lean = o.lean ?? 0.06;
-    } else if (pose === 'strap') { arms = [{ ua: Math.PI - 0.3, fa: Math.PI - 0.06 }, { ua: 0.2, fa: 1.7 }]; hd = o.headDown ?? 0.35; }
-    else if (pose === 'phone') { arms = [{ ua: 0.16, fa: 1.75 }, { ua: 0.1, fa: 1.62 }]; hd = o.headDown ?? 0.5; }
+    } else if (pose === 'strap') { arms = [{ ua: Math.PI - 0.38, fa: Math.PI - 0.12 }, { ua: 0.06, fa: 0.16 }]; hd = o.headDown ?? 0.35; }
+    else if (pose === 'phone') { arms = [{ ua: 0.12, fa: 2.35 }, { ua: 0.18, fa: 2.15 }]; hd = o.headDown ?? 0.55; }
     else arms = [{ ua: 0.05, fa: 0.14 }, { ua: -0.04, fa: 0.06 }];
   } else if (pose === 'sit') {
     hip = [0, 0.27];
@@ -352,7 +352,7 @@ function drawFigure(g, o) {
   if (o.shadow) { // cast shadow on the ground from the figure's own alpha
     const tg = B.tg; tg.setTransform(1, 0, 0, 1, 0, 0); tg.globalCompositeOperation = 'copy'; tg.drawImage(B.c, 0, 0);
     tg.globalCompositeOperation = 'source-in'; tg.fillStyle = o.shadow.col || '#000'; tg.fillRect(0, 0, BW, BH); tg.globalCompositeOperation = 'source-over';
-    g.save(); g.globalAlpha = o.shadow.a ?? 0.35; g.filter = `blur(${o.shadow.blur ?? Math.max(1, h * 0.012)}px)`;
+    g.save(); g.globalAlpha = o.shadow.a ?? 0.35; if (h > 160) g.filter = `blur(${o.shadow.blur ?? Math.max(1, h * 0.012)}px)`;
     g.translate(o.x, o.y); g.transform(1, 0, o.shadow.k ?? -1.2, -(o.shadow.sy ?? 0.25), 0, 0);
     g.drawImage(B.t, 0, 0, BW, BH, bx - pad - o.x, by - pad - o.y, BW, BH); g.restore();
   }
