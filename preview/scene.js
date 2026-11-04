@@ -229,7 +229,7 @@ const deskB = buildDesktop(desk, '23:59', '11月30日');
 const toast = el('div', '', desk, `<div class="bell">${ICON.bell}</div><div><h4>叮咚～ 新通知</h4><p>亲爱的 Plus 用户您好 ♡</p></div>`); toast.id = 'toast';
 const bell = toast.querySelector('.bell');
 const trail = el('div', 'full', desk);
-const DRAG0 = 2.95, DRAG1 = 4.22, STAMP = 0.07, NTRAIL = Math.ceil((DRAG1 - DRAG0) / STAMP);
+const DRAG0 = 2.95, DRAG1 = 4.22, STAMP = 0.042, NTRAIL = Math.ceil((DRAG1 - DRAG0) / STAMP);
 const trailEls = []; for (let i = 0; i < NTRAIL; i++) { const w = el('div', 'win dlg', trail, dialogInner()); trailEls.push(w); }
 const dlg = el('div', 'win dlg', desk, dialogInner());
 const tip = el('div', '', desk, '没有第二个选项哦～'); tip.id = 'tip';
@@ -238,7 +238,7 @@ const cursor = el('div', '', desk, ICON.cursor); cursor.id = 'cursor';
 const DLGX = 580, DLGY = 300;
 function dragPos(tt) {
   const u = E.ioQ(P(tt, DRAG0, DRAG1));
-  return { x: DLGX + 430 * Math.sin(2 * Math.PI * u), y: DLGY - 165 * Math.sin(4 * Math.PI * u) };
+  return { x: DLGX + 540 * Math.sin(2 * Math.PI * u), y: DLGY - 230 * Math.sin(4 * Math.PI * u) };
 }
 const CUR = [[1.06, 1240, 1110], [1.5, 1290, 760], [1.85, 1600, 905], [2.3, 1600, 905], [2.62, 1173, 615], [2.86, 1173, 615], [DRAG0, DLGX + 339, DLGY + 59]];
 function curAt(t) {
@@ -326,7 +326,7 @@ const wM = el('div', 'win mergew', Dworld, `<div class="tb"><span>Plus 共享额
   <div class="mnote">合并前 100% + 100%　→　合并后 <span style="color:#ff3b5c">100%</span></div><div class="mfine">* 额度用完可随时升级 Pro 继续畅聊 ♡</div><div id="mwarn">⚠ 额度即将耗尽</div>`);
 css(wM, { left: '270px', top: '300px' });
 const mFill = wM.querySelector('.mbar .fill'), mPct = wM.querySelector('.mbar .pct'), mFace = wM.querySelector('.mface'), mHeart = wM.querySelector('.heart'), mWarn = wM.querySelector('#mwarn');
-const eq = el('div', 'abs', Dworld, stroked('1 + 1 = 1 ?!', 'kw ext', '--sw:13px;--fc:#ffe45c;font-size:92px')); css(eq, { left: '360px', top: '150px' });
+const eq = el('div', 'abs', Dworld, stroked('1 + 1 = 1 ?!', 'kw ext', '--sw:16px;--fc:#ffe45c;font-size:120px')); css(eq, { left: '300px', top: '110px' });
 const wPro = el('div', 'win prow', Dworld, `<div class="tb"><span><span class="tcrown">${ICON.crown}</span>Pro 尊享会员</span>${tbb()}</div>
   <div class="pbody"><div class="pmas"></div><div><div class="pname kw">Pro 额度</div><div class="pbar">${stroked('∞', 'kw', '--sw:10px')}</div><div class="pnote">不限量 · 不排队 · 不提醒</div></div></div>`);
 css(wPro, { left: '1345px', top: '70px' });
@@ -383,7 +383,7 @@ function renderB(t) {
   bell.style.transform = `rotate(${Math.sin((t - 1.08) * 28) * 22 * Math.exp(-2.2 * Math.max(0, t - 1.08))}deg)`;
   // 叮咚 burst
   const kd = P(t, 1.08, 1.32), ko = P(t, 1.95, 2.18);
-  vis(dd, false); // dropped: the toast already says 叮咚
+  vis(dd, t >= 1.08 && t < 2.18);
   css(dd, { left: '1350px', top: '470px', transform: `scale(${E.outBack(kd, 2.4) * (1 - E.inBack(ko))}) rotate(${L(-30, 6, E.outC(kd)) + Math.sin(t * 9) * 3}deg)` });
   // dialog
   const kp = P(t, 2.2, 2.55);
@@ -420,7 +420,7 @@ function renderC(t) {
   Ccam.style.transform = camCSS(cam);
   const h = horizon(cam); placeSky(Csky, h.y, h.x, t, 23);
   Cfloor.style.backgroundPosition = `0 ${(t * 40) % 40}px`;
-  debris.forEach(o => { const [x, y, z] = o.p, i = o.i; vis(o, i % 2 === 0); o.style.transform = `scale(.85) translate3d(${x + Math.sin(t * .7 + i) * 40}px,${y - (t - 4.37) * 25 + Math.cos(t + i) * 20}px,${z}px) rotateY(${Math.sin(t * .9 + i * 2) * 35}deg) rotateZ(${Math.sin(t * .6 + i) * 12}deg)`; });
+  debris.forEach(o => { const [x, y, z] = o.p, i = o.i; o.style.transform = `translate3d(${x + Math.sin(t * .7 + i) * 40}px,${y - (t - 4.37) * 25 + Math.cos(t + i) * 20}px,${z}px) rotateY(${Math.sin(t * .9 + i * 2) * 35}deg) rotateZ(${Math.sin(t * .6 + i) * 12}deg)`; });
   Ccoins.forEach(c => { const [x, y, z, i] = c.p; c.style.transform = `translate3d(${x}px,${y + Math.sin(t * 2 + i) * 18}px,${z}px) rotateY(${t * (120 + i * 15)}deg)`; });
   // calendar rises from the grid floor
   const kc = P(t, 4.45, 5.0);
@@ -441,11 +441,11 @@ function renderC(t) {
   gnStar.style.transform = `translate(300px,-150px) translateZ(4px) scale(${E.outBack(P(t, 6.68, 6.85))})`;
   const kg2 = P(t, 6.12, 6.45);
   const away = E.inBack(P(t, 7.25, 7.55));
-  vis(gn2, false); vis(fine, t < 7.55);
+  vis(gn2, t >= 6.12 && t < 7.55); vis(fine, t < 7.55);
   gn2.style.transform = `translate3d(${420 + away * 700}px,${30 - away * 500 + Math.sin(t * 2.4 + 1) * 8}px,-80px) rotateY(${-16 + Math.sin(t * 1.5 + 1) * 10}deg) scale(${Math.max(.001, spring(t - 6.12, 0, 13, 6))}) rotateZ(${L(14, -3, E.outC(kg2))}deg)`;
   const nf = Math.floor(P(t, 6.68, 7.15) * FINE.length);
   fine.textContent = FINE.slice(0, nf) + (nf < FINE.length && t > 6.68 && Math.sin(t * 30) > 0 ? '▌' : '');
-  fine.style.transform = `translate3d(${190 + away * 900}px,${-20 - away * 420}px,-100px) rotateY(${-16 + Math.sin(t * 1.5 + 1) * 10}deg)`;
+  fine.style.transform = `translate3d(${150 + away * 900}px,${140 - away * 420}px,-80px) rotateY(${-16 + Math.sin(t * 1.5 + 1) * 10}deg)`;
   // Pro gift lands with a thud and glows; then the tiny Plus gift plops in front
   const kp = P(t, 7.23, 7.5);
   vis(proGift, t >= 7.23);
@@ -468,9 +468,9 @@ function renderC(t) {
   flyB.style.transform = `translate3d(${90 + kf * 560}px,${L(190, 0, kf)}px,${L(330, 1150, kf)}px) rotateZ(${kf * 300}deg) rotateY(${-kf * 40}deg) scale(${L(.35, 1, kf)})`;
   // confetti
   const g = Cconf.getContext('2d'); g.clearRect(0, 0, 1920, 1080);
-  const c1 = project(-430, -200, -160, camC(5.0)); confetti(g, t, 5.0, c1.x, c1.y, 5, 70, 1.0);
-  const c2 = project(90, 180, 330, camC(7.79)); confetti(g, t, 7.79, c2.x, c2.y, 9, 45, .8, true);
-  const c3 = project(-160, -260, -560, camC(7.4)); confetti(g, t, 7.4, c3.x, c3.y, 13, 55, 1.0);
+  const c1 = project(-430, -200, -160, camC(5.0)); confetti(g, t, 5.0, c1.x, c1.y, 5, 110, 1.1);
+  const c2 = project(90, 180, 330, camC(7.79)); confetti(g, t, 7.79, c2.x, c2.y, 9, 70, .8, true);
+  const c3 = project(-160, -260, -560, camC(7.4)); confetti(g, t, 7.4, c3.x, c3.y, 13, 90, 1.0);
   C.style.opacity = 1;
 }
 
@@ -490,7 +490,7 @@ function renderD(t) {
     const dt = t - imp;
     const s = spring(dt, 1.35, 16, 7);
     wM.style.transform = `scale(${s * WS}) rotateX(${8 * Math.exp(-7 * dt) * Math.sin(dt * 18)}deg) rotateY(${6 * Math.exp(-6 * dt) * Math.sin(dt * 14)}deg)`;
-    Dburst.style.transform = `scale(${L(.4, 1.8, E.outC(P(t, imp, 9.8)))}) rotate(${dt * 60}deg)`;
+    Dburst.style.transform = `scale(${L(.4, 2.4, E.outC(P(t, imp, 9.8)))}) rotate(${dt * 60}deg)`;
     Dburst.style.opacity = 1 - P(t, 9.6, 9.8);
     const f = 1 - .94 * E.ioQ(P(t, 9.6, 9.85));
     const col = f > .5 ? '#46e0bd' : f > .22 ? '#ffe45c' : '#ff3b5c';
@@ -511,16 +511,21 @@ function renderD(t) {
   deskD.batt.style.width = (merged ? 86 * (1 - .9 * P(t, 9.6, 9.85)) : 86) + '%';
   deskD.batt.style.background = merged && t > 9.75 ? '#ff3b5c' : '';
   const g = Dconf.getContext('2d'); g.clearRect(0, 0, 1920, 1080);
-  confetti(g, t, imp, 770, 380, 31, 60, 1.3, true);
+  confetti(g, t, imp, 770, 360, 31, 110, 1.5, true);
 }
 
 function renderCaps(t) {
-  capLines.forEach(({ a, b, ln }) => {
+  capLines.forEach(({ a, b, ln, chs }) => {
     const on = t >= a - .02 && t < b;
     vis(ln, on); if (!on) return;
-    const kin = E.outC(P(t, a, a + .22)), out = E.inQ(P(t, b - .18, b));
-    ln.style.opacity = kin * (1 - out);
-    ln.style.transform = `translateY(${(1 - kin) * 16 + out * 24}px)`;
+    const out = E.inQ(P(t, b - .18, b));
+    ln.style.opacity = 1 - out; ln.style.transform = `translateY(${out * 24}px)`;
+    chs.forEach((c, i) => {
+      const ti = a + i * .03, k = P(t, ti, ti + .2);
+      const s = t < ti ? .6 : spring(t - ti, .6, 18, 11);
+      c.style.opacity = E.outQ(P(t, ti, ti + .1));
+      c.style.transform = `translateY(${(1 - E.outC(k)) * 16}px) scale(${s})`;
+    });
   });
 }
 
