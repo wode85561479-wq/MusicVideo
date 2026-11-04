@@ -61,3 +61,16 @@ window.preloadFonts = async function () {
   await document.fonts.ready;
   return [...document.fonts].filter(f => f.status === 'loaded').length;
 };
+
+// ---------- live playback in a normal browser: open index.html?play ----------
+if (/[?&]play\b/.test(location.search)) {
+  const stage = document.getElementById('stage');
+  const fit = () => { const k = Math.min(innerWidth / 1920, innerHeight / 1080); stage.style.transformOrigin = '0 0'; stage.style.transform = `translate(${(innerWidth - 1920 * k) / 2}px,${(innerHeight - 1080 * k) / 2}px) scale(${k})`; };
+  document.documentElement.style.cssText += ';width:100vw;height:100vh;background:#000'; document.body.style.cssText += ';width:100vw;height:100vh';
+  fit(); addEventListener('resize', fit);
+  const audio = new Audio('assets/song.m4a');
+  const go = el('div', '', document.body, '<div class="kw" style="font-size:42px;color:#fff;text-align:center;line-height:1.6">▶ 点击播放<br><span style="font-size:22px;opacity:.7">空格 暂停/继续 · ← → 快退/快进 5 秒</span></div>');
+  css(go, { position: 'fixed', inset: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.6)', cursor: 'pointer', zIndex: 99 });
+  go.onclick = async () => { await window.preloadFonts(); go.remove(); audio.play(); (function loop() { window.renderAt(Math.min(audio.currentTime, END)); requestAnimationFrame(loop); })(); };
+  addEventListener('keydown', e => { if (e.code === 'Space') { audio.paused ? audio.play() : audio.pause(); e.preventDefault(); } if (e.code === 'ArrowRight') audio.currentTime += 5; if (e.code === 'ArrowLeft') audio.currentTime = Math.max(0, audio.currentTime - 5); });
+}
