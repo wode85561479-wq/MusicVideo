@@ -38,6 +38,8 @@ const ICON = {
   doc: `<svg viewBox="0 0 100 100"><path d="M22 8h40l18 18v66H22z" fill="#fff" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><path d="M62 8v18h18" fill="#ff9ad5" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><path d="M33 44h34M33 58h34M33 72h20" stroke="${INK}" stroke-width="5" stroke-linecap="round"/></svg>`,
   bell: `<svg viewBox="0 0 100 100"><path d="M50 10a6 6 0 0 1 6 6v4c14 3 22 15 22 30v16l8 11H14l8-11V50c0-15 8-27 22-30v-4a6 6 0 0 1 6-6z" fill="#ffe45c" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="86" r="8" fill="#ffb84d" stroke="${INK}" stroke-width="5"/><path d="M32 46c2-8 7-13 13-15" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none"/></svg>`,
   cursor: `<svg viewBox="0 0 32 44" width="46" height="63"><path d="M3 3 L3 34 L10.5 27.5 L16 40 L22 37.5 L16.5 25.5 L28 25.5 Z" fill="#fff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/></svg>`,
+  crown: `<svg viewBox="0 0 100 100"><path d="M12 74 L16 30 L35 50 L50 18 L65 50 L84 30 L88 74Z" fill="#ffd23f" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><rect x="10" y="72" width="80" height="16" rx="5" fill="#ffb84d" stroke="${INK}" stroke-width="6"/><circle cx="50" cy="58" r="7" fill="#ff5fae" stroke="${INK}" stroke-width="4"/><circle cx="16" cy="28" r="6" fill="#fff" stroke="${INK}" stroke-width="4"/><circle cx="50" cy="16" r="6" fill="#fff" stroke="${INK}" stroke-width="4"/><circle cx="84" cy="28" r="6" fill="#fff" stroke="${INK}" stroke-width="4"/></svg>`,
+  vip: `<svg viewBox="0 0 100 100"><path d="M8 24h30l8 9h46v53H8z" fill="#ffd23f" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><path d="M8 40h84" stroke="#ffb84d" stroke-width="5"/><rect x="35" y="52" width="30" height="24" rx="5" fill="#fff" stroke="${INK}" stroke-width="5"/><path d="M41 52v-6a9 9 0 0 1 18 0v6" fill="none" stroke="${INK}" stroke-width="5"/><circle cx="50" cy="63" r="3.5" fill="${INK}"/></svg>`,
   heart: `<svg viewBox="0 0 100 100"><path d="M50 86C22 66 10 52 10 35a20 20 0 0 1 40-6 20 20 0 0 1 40 6c0 17-12 31-40 51z" fill="#ff5fae" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><path d="M26 34a10 10 0 0 1 10-9" stroke="#fff" stroke-width="6" stroke-linecap="round" fill="none"/></svg>`,
 };
 function starburst(n, r1, r2, fill, sw = 8) {
@@ -45,13 +47,15 @@ function starburst(n, r1, r2, fill, sw = 8) {
   return `<svg viewBox="0 0 420 420"><path d="${d}Z" fill="${fill}" stroke="${INK}" stroke-width="${sw}" stroke-linejoin="round"/></svg>`;
 }
 // 额度酱 — the quota-bar mascot
-function mascot(fill = 1, mood = 'happy') {
+function mascot(fill = 1, mood = 'happy', colOv) {
   const w = Math.max(0, 174 * fill);
-  const col = fill > .5 ? '#46e0bd' : fill > .22 ? '#ffe45c' : '#ff3b5c';
-  const eyes = mood === 'happy'
+  const col = colOv || (fill > .5 ? '#46e0bd' : fill > .22 ? '#ffe45c' : '#ff3b5c');
+  const eyes = mood === 'cool'
+    ? `<rect x="52" y="36" width="42" height="24" rx="10" fill="${INK}"/><rect x="106" y="36" width="42" height="24" rx="10" fill="${INK}"/><path d="M94 45h12" stroke="${INK}" stroke-width="5"/><path d="M60 42h12M114 42h12" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`
+    : mood === 'happy'
     ? `<path d="M66 52q8-11 16 0M118 52q8-11 16 0" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/>`
     : `<circle cx="74" cy="50" r="6" fill="${INK}"/><circle cx="126" cy="50" r="6" fill="${INK}"/><path d="M156 30q6 10 0 14q-6-4 0-14z" fill="#7fd3ff" stroke="${INK}" stroke-width="3"/>`;
-  const mouth = mood === 'happy' ? `<path d="M88 64q12 13 24 0" stroke="${INK}" stroke-width="6" fill="#ff7a9c" stroke-linejoin="round"/>` : `<path d="M86 72q7-7 14 0t14 0" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  const mouth = mood === 'cool' ? `<path d="M88 68q14 10 28-4" stroke="${INK}" stroke-width="6" fill="none" stroke-linecap="round"/>` : mood === 'happy' ? `<path d="M88 64q12 13 24 0" stroke="${INK}" stroke-width="6" fill="#ff7a9c" stroke-linejoin="round"/>` : `<path d="M86 72q7-7 14 0t14 0" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
   return `<svg viewBox="0 0 200 110"><rect x="6" y="14" width="188" height="82" rx="41" fill="#fff" stroke="${INK}" stroke-width="7"/>` +
     (w > 4 ? `<rect x="13" y="21" width="${w.toFixed(1)}" height="68" rx="34" fill="${col}"/>` : '') +
     `<ellipse cx="58" cy="68" rx="10" ry="6" fill="#ff9ad5" opacity=".9"/><ellipse cx="142" cy="68" rx="10" ry="6" fill="#ff9ad5" opacity=".9"/>${eyes}${mouth}</svg>`;
@@ -110,10 +114,10 @@ function tbb() { return `<span class="tbb"><i>–</i><i>□</i><i class="x">×</
 function buildDesktop(parent, clock, date) {
   const d = el('div', 'full', parent);
   d.innerHTML = wallpaper();
-  const icons = [['chat', 'ChatGPT'], ['code', 'Codex'], ['wallet', '我的钱包'], ['trash', '回收站'], ['doc', '额度说明.txt']];
+  const icons = [['chat', 'ChatGPT'], ['code', 'Codex'], ['wallet', '我的钱包'], ['trash', '回收站'], ['vip', 'Pro 专区']];
   icons.forEach(([k, n], i) => { const ic = el('div', 'dicon', d, `${ICON[k]}<span>${n}</span>`); css(ic, { left: '40px', top: 40 + i * 162 + 'px' }); });
   const tb = el('div', 'taskbar', d, `<div class="start">♡ 开始</div><div class="task">${ICON.chat}ChatGPT</div><div class="task">${ICON.code}Codex</div>
-   <div class="tray"><div class="batt">额度<div class="cell"><b style="width:86%"></b></div></div><div class="clock"><b>${clock}</b><small>${date}</small><div class="ring"></div></div></div>`);
+   <div class="tray"><div class="tier">PLUS 会员</div><div class="batt">额度<div class="cell"><b style="width:86%"></b></div></div><div class="clock"><b>${clock}</b><small>${date}</small><div class="ring"></div></div></div>`);
   d.clockB = tb.querySelector('.clock b'); d.clockS = tb.querySelector('.clock small'); d.ring = tb.querySelector('.ring'); d.batt = tb.querySelector('.cell b');
   return d;
 }
@@ -161,10 +165,10 @@ function project(x, y, z, cam, d = 1400) {
   const cy = Math.cos(cam.ry), sy = Math.sin(cam.ry);
   const x1 = x * cy + z * sy, z1 = -x * sy + z * cy;
   const cx = Math.cos(cam.rx), sx = Math.sin(cam.rx);
-  const y2 = y * cx - z1 * sx; let z2 = y * sx + z1 * cx; z2 += cam.dz;
+  const y2 = y * cx - z1 * sx + (cam.dy || 0); let z2 = y * sx + z1 * cx; z2 += cam.dz;
   const s = d / (d - z2); return { x: 960 + x1 * s, y: 540 + y2 * s, s };
 }
-function camCSS(c) { return `translateZ(${c.dz}px) rotateX(${c.rx / DEG}deg) rotateY(${c.ry / DEG}deg)`; }
+function camCSS(c) { return `translateZ(${c.dz}px) translateY(${c.dy || 0}px) rotateX(${c.rx / DEG}deg) rotateY(${c.ry / DEG}deg)`; }
 function horizon(c) { const p = project(0, 0, -1e6, c); return p; }
 
 // confetti (deterministic, screen-space with fake depth)
@@ -221,7 +225,7 @@ const B = document.getElementById('B');
 const Bworld = el('div', 'world', B); Bworld.style.perspective = '1600px';
 const desk = el('div', 'full', Bworld); desk.style.transformOrigin = '50% 100%';
 const deskB = buildDesktop(desk, '23:59', '11月30日');
-const toast = el('div', '', desk, `<div class="bell">${ICON.bell}</div><div><h4>叮咚～ 新通知</h4><p>亲爱的用户您好 ♡</p></div>`); toast.id = 'toast';
+const toast = el('div', '', desk, `<div class="bell">${ICON.bell}</div><div><h4>叮咚～ 新通知</h4><p>亲爱的 Plus 用户您好 ♡</p></div>`); toast.id = 'toast';
 const bell = toast.querySelector('.bell');
 const trail = el('div', 'full', desk);
 const DRAG0 = 2.95, DRAG1 = 4.22, STAMP = 0.042, NTRAIL = Math.ceil((DRAG1 - DRAG0) / STAMP);
@@ -279,17 +283,27 @@ function text3D(parent, txt, size, front, n = 12, gap = 4.5) {
 const gn = text3D(Ccam, '好消息！', 190, '#ffe45c');
 const gnStar = el('div', 'gl kw', gn, stroked('*', '', '--sw:10px;--fc:#ff5fae')); css(gnStar, { fontSize: '120px', transform: 'translate(300px,-150px) translateZ(4px)' });
 const gn2 = text3D(Ccam, '要宣布咯～', 108, '#ff9ad5', 9, 4);
-const fine = el('div', 'gl', Ccam); css(fine, { fontSize: '27px', fontWeight: '900', color: '#fff', textShadow: '2px 2px 0 #2b1d4a' });
-const FINE = '*本活动最终解释权归本公司所有';
-// gift box
-const gift = el('div', 'obj', Ccam);
-const RIB = (bg) => `linear-gradient(90deg,transparent 42%,#ffe45c 42%,#ffe45c 58%,transparent 58%),${bg}`;
-const giftBody = box(gift, 300, 240, 300, { front: { bg: RIB('#ff6fb8') }, back: { bg: RIB('#e0559c') }, right: { bg: RIB('#e85ea6') }, left: { bg: RIB('#f067ae') }, top: { bg: '#6a1f55' }, bottom: { bg: '#b84485' } });
-const lid = el('div', 'obj', gift);
-const lidBox = box(lid, 330, 64, 330, { front: { bg: RIB('#ff86c4') }, back: { bg: RIB('#e0559c') }, right: { bg: RIB('#e85ea6') }, left: { bg: RIB('#f574b8') }, top: { bg: 'linear-gradient(90deg,transparent 42%,#ffe45c 42% 58%,transparent 58%),linear-gradient(0deg,transparent 42%,#ffe45c 42% 58%,transparent 58%),#ff9ad0' }, bottom: { bg: '#b84485' } });
-const bow = el('div', 'abs', lid, `<svg viewBox="0 0 200 110" width="200" height="110"><path d="M100 70C70 20 20 10 22 50s50 30 78 20z" fill="#ffe45c" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><path d="M100 70C130 20 180 10 178 50s-50 30-78 20z" fill="#ffe45c" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><circle cx="100" cy="68" r="16" fill="#ffd23f" stroke="${INK}" stroke-width="7"/></svg>`);
-css(bow, { left: '-100px', top: '-140px', width: '200px', height: '110px' });
-const rays = el('div', 'abs', gift); css(rays, { width: '1100px', height: '1100px', left: '-550px', top: '-550px', borderRadius: '50%', background: 'repeating-conic-gradient(from 0deg,rgba(255,250,200,.85) 0 7deg,rgba(255,250,200,0) 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 0,#000 18%,transparent 62%)' });
+const fine = el('div', 'gl', Ccam); css(fine, { whiteSpace: 'pre', lineHeight: '1.45', fontSize: '28px', fontWeight: '900', color: '#fff', textShadow: '2px 2px 0 #2b1d4a' });
+const FINE = '*本次好消息仅对 Pro 会员生效\n*Plus 用户请耐心排队 · 最终解释权归本公司所有';
+// gifts: huge golden Pro gift vs. tiny Plus gift
+const BOW = `<svg viewBox="0 0 200 110" width="200" height="110"><path d="M100 70C70 20 20 10 22 50s50 30 78 20z" fill="#ffe45c" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><path d="M100 70C130 20 180 10 178 50s-50 30-78 20z" fill="#ffe45c" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/><circle cx="100" cy="68" r="16" fill="#ffd23f" stroke="${INK}" stroke-width="7"/></svg>`;
+function makeGift(parent, W, H, c, label, lsz) {
+  const g = el('div', 'obj', parent);
+  const R = bg => `linear-gradient(90deg,transparent 42%,${c.rib} 42%,${c.rib} 58%,transparent 58%),${bg}`;
+  const tag = label ? `<div class="gtag kw" style="font-size:${lsz}px">${label}</div>` : '';
+  box(g, W, H, W, { front: { bg: R(c.body), html: tag }, back: { bg: R(c.dark) }, right: { bg: R(c.dark) }, left: { bg: R(c.body) }, top: { bg: '#3a1a40' }, bottom: { bg: c.dark } });
+  const lid = el('div', 'obj', g), lw = W * 1.1, lh = Math.max(26, H * .26);
+  box(lid, lw, lh, lw, { front: { bg: R(c.lid) }, back: { bg: R(c.dark) }, right: { bg: R(c.dark) }, left: { bg: R(c.lid) }, top: { bg: `linear-gradient(90deg,transparent 42%,${c.rib} 42% 58%,transparent 58%),linear-gradient(0deg,transparent 42%,${c.rib} 42% 58%,transparent 58%),${c.lid}` }, bottom: { bg: c.dark } });
+  g.lid = lid; g.H = H; g.lh = lh; g.W = W;
+  return g;
+}
+const proGift = makeGift(Ccam, 440, 360, { body: '#ffd23f', dark: '#d9a400', lid: '#ffe270', rib: '#ff3b5c' }, 'PRO 尊享', 54);
+proGift.lid.style.transform = `translateY(${-proGift.H / 2 - proGift.lh / 2}px)`;
+const proCrown = el('div', 'abs', proGift.lid, ICON.crown); css(proCrown, { width: '190px', height: '190px', left: '-95px', top: -proGift.lh / 2 - 178 + 'px' });
+const rays = el('div', 'abs', proGift); css(rays, { width: '1500px', height: '1500px', left: '-750px', top: '-750px', borderRadius: '50%', background: 'repeating-conic-gradient(from 0deg,rgba(255,236,140,.9) 0 7deg,rgba(255,236,140,0) 7deg 20deg)', WebkitMaskImage: 'radial-gradient(circle,#000 0,#000 16%,transparent 60%)' });
+const gift = makeGift(Ccam, 170, 140, { body: '#ff8fcb', dark: '#de6aac', lid: '#ffaedb', rib: '#ffe45c' }, 'Plus', 30);
+const lid = gift.lid;
+const bow = el('div', 'abs', lid, BOW); css(bow, { left: '-100px', top: -gift.lh / 2 - 92 + 'px', width: '200px', height: '110px', transform: 'scale(.5)', transformOrigin: '50% 100%' });
 const flyA = el('div', 'abs', Ccam, ICON.chat), flyB = el('div', 'abs', Ccam, ICON.code);
 [flyA, flyB].forEach(f => css(f, { width: '220px', height: '220px', left: '-110px', top: '-110px' }));
 const Cconf = el('canvas', 'full', C); Cconf.width = 1920; Cconf.height = 1080;
@@ -300,18 +314,24 @@ const Dshake = el('div', 'full', D);
 const deskD = buildDesktop(Dshake, '00:01', '12月1日');
 const Dconf = el('canvas', 'full', Dshake); Dconf.width = 1920; Dconf.height = 1080;
 const Dworld = el('div', 'world', Dshake); Dworld.style.perspective = '1500px';
-const Dburst = el('div', 'burst', Dworld, starburst(18, 205, 165, '#fff6b0', 6)); css(Dburst, { left: '750px', top: '260px' });
-const appWin = (name, icon) => `<div class="tb"><span>${name}</span>${tbb()}</div><div class="abody"><div class="aicon">${icon}</div><div><div class="aname kw">${name}</div><div class="alabel">本月额度</div><div class="bar"><div class="fill" style="width:100%"></div><span class="pct">100%</span></div></div></div>`;
-const wGPT = el('div', 'win appw', Dworld, appWin('ChatGPT', ICON.chat)); css(wGPT, { left: '210px', top: '250px' });
-const wCdx = el('div', 'win appw', Dworld, appWin('Codex', ICON.code)); css(wCdx, { left: '1110px', top: '250px' });
-const wM = el('div', 'win mergew', Dworld, `<div class="tb"><span>ChatGPT ♡ Codex · 共享额度</span>${tbb()}</div>
+const Dburst = el('div', 'burst', Dworld, starburst(18, 205, 165, '#fff6b0', 6)); css(Dburst, { left: '560px', top: '340px' });
+const appWin = (name, icon) => `<div class="tb"><span>${name} · Plus</span>${tbb()}</div><div class="abody"><div class="aicon">${icon}</div><div><div class="aname kw">${name}</div><div class="alabel">本月额度</div><div class="bar"><div class="fill" style="width:100%"></div><span class="pct">100%</span></div></div></div>`;
+const wGPT = el('div', 'win appw', Dworld, appWin('ChatGPT', ICON.chat)); css(wGPT, { left: '170px', top: '380px' });
+const wCdx = el('div', 'win appw', Dworld, appWin('Codex', ICON.code)); css(wCdx, { left: '830px', top: '380px' });
+const wM = el('div', 'win mergew', Dworld, `<div class="tb"><span>Plus 共享额度 · ChatGPT ♡ Codex</span>${tbb()}</div>
   <div class="mrow"><div class="ic">${ICON.chat}</div><div class="heart">${ICON.heart}</div><div class="ic">${ICON.code}</div></div>
   <div class="mlabel">本月共享额度（两边一起用）</div>
   <div class="mbar"><div class="fill"></div><div class="mface abs" style="width:120px;height:66px;top:2px"></div><span class="pct">100%</span></div>
   <div class="mnote">合并前 100% + 100%　→　合并后 <span style="color:#ff3b5c">100%</span></div><div class="mfine">* 额度用完可随时升级 Pro 继续畅聊 ♡</div><div id="mwarn">⚠ 额度即将耗尽</div>`);
-css(wM, { left: '460px', top: '210px' });
+css(wM, { left: '270px', top: '300px' });
 const mFill = wM.querySelector('.mbar .fill'), mPct = wM.querySelector('.mbar .pct'), mFace = wM.querySelector('.mface'), mHeart = wM.querySelector('.heart'), mWarn = wM.querySelector('#mwarn');
-const eq = el('div', 'abs', Dworld, stroked('1 + 1 = 1 ?!', 'kw ext', '--sw:16px;--fc:#ffe45c;font-size:120px')); css(eq, { left: '1120px', top: '34px' });
+const eq = el('div', 'abs', Dworld, stroked('1 + 1 = 1 ?!', 'kw ext', '--sw:16px;--fc:#ffe45c;font-size:120px')); css(eq, { left: '300px', top: '110px' });
+const wPro = el('div', 'win prow', Dworld, `<div class="tb"><span><span class="tcrown">${ICON.crown}</span>Pro 尊享会员</span>${tbb()}</div>
+  <div class="pbody"><div class="pmas"></div><div><div class="pname kw">Pro 额度</div><div class="pbar">${stroked('∞', 'kw', '--sw:10px')}</div><div class="pnote">不限量 · 不排队 · 不提醒</div></div></div>`);
+css(wPro, { left: '1345px', top: '70px' });
+const pMas = wPro.querySelector('.pmas'), pBar = wPro.querySelector('.pbar');
+pMas.innerHTML = mascot(1, 'cool', '#ffd23f') + `<div class="crown">${ICON.crown}</div>`;
+const proSpk = [[1320, 60, 34], [1880, 120, 26], [1860, 380, 30], [1330, 360, 22], [1600, 40, 20]].map(([x, y, r], i) => { const e = el('div', 'abs', Dworld, `<svg viewBox="-40 -40 80 80" width="80" height="80">${sparkle(0, 0, r, i % 2 ? '#fff' : '#ffe45c')}</svg>`); css(e, { left: x - 40 + 'px', top: y - 40 + 'px' }); return e; });
 const cursorD = el('div', '', Dshake, ICON.cursor); cursorD.id = 'cursorD';
 
 // ======================= captions =======================
@@ -389,8 +409,9 @@ function renderB(t) {
 
 function camC(t) {
   const ry = t < 7.4 ? L(-16, 10, E.ioQ(P(t, 4.37, 7.4))) : L(10, 0, E.io(P(t, 7.4, 8.6)));
-  let dz = t < 4.95 ? L(160, 0, E.outC(P(t, 4.37, 4.95))) : t < 7.5 ? L(0, -60, P(t, 4.95, 7.5)) : L(-60, 420, E.inC(P(t, 7.5, 8.6)));
-  return { rx: -4.5 * DEG, ry: ry * DEG, dz };
+  let dz = t < 4.95 ? L(160, 0, E.outC(P(t, 4.37, 4.95))) : t < 7.5 ? L(0, -60, P(t, 4.95, 7.5)) : L(-60, 330, E.inC(P(t, 7.5, 8.6)));
+  const dy = L(0, -190, E.io(P(t, 7.3, 8.5)));
+  return { rx: -4.5 * DEG, ry: ry * DEG, dz, dy };
 }
 function renderC(t) {
   const cam = camC(t);
@@ -401,7 +422,7 @@ function renderC(t) {
   Ccoins.forEach(c => { const [x, y, z, i] = c.p; c.style.transform = `translate3d(${x}px,${y + Math.sin(t * 2 + i) * 18}px,${z}px) rotateY(${t * (120 + i * 15)}deg)`; });
   // calendar rises from the grid floor
   const kc = P(t, 4.45, 5.0);
-  const calY = L(1000, 50, E.outBack(kc, 1.3));
+  const calY = L(1000, 50, E.outBack(kc, 1.3)) + E.inBack(P(t, 7.15, 7.5)) * 1150;
   cal.style.transform = `translate3d(-430px,${calY}px,-160px) rotateY(${26 + Math.sin(t * 1.3) * 3}deg)`;
   // tear-off 11/30
   const lift = E.outQ(P(t, 4.86, 5.0)), kt = P(t, 5.0, 5.62), ke = E.outQ(kt);
@@ -413,35 +434,41 @@ function renderC(t) {
   const kg = P(t, 5.56, 5.9);
   vis(gn, t >= 5.56);
   const gs = Math.max(.001, spring(t - 5.56, 0, 13, 6));
-  gn.style.transform = `translate3d(400px,${-170 + Math.sin(t * 2.4) * 10}px,-120px) rotateY(${-20 + Math.sin(t * 1.7) * 14}deg) rotateX(${L(-70, 0, E.outC(kg)) + Math.sin(t * 2.1) * 5}deg) scale(${gs})`;
+  gn.style.transform = `translate3d(${400 - 280 * E.io(P(t, 7.15, 7.6))}px,${-170 - 150 * E.io(P(t, 7.15, 7.6)) + Math.sin(t * 2.4) * 10}px,-120px) rotateY(${-20 + Math.sin(t * 1.7) * 14}deg) rotateX(${L(-70, 0, E.outC(kg)) + Math.sin(t * 2.1) * 5}deg) scale(${gs})`;
   vis(gnStar, t >= 6.68);
   gnStar.style.transform = `translate(300px,-150px) translateZ(4px) scale(${E.outBack(P(t, 6.68, 6.85))})`;
   const kg2 = P(t, 6.12, 6.45);
-  vis(gn2, t >= 6.12);
-  gn2.style.transform = `translate3d(420px,${30 + Math.sin(t * 2.4 + 1) * 8}px,-80px) rotateY(${-16 + Math.sin(t * 1.5 + 1) * 10}deg) scale(${Math.max(.001, spring(t - 6.12, 0, 13, 6))}) rotateZ(${L(14, -3, E.outC(kg2))}deg)`;
+  const away = E.inBack(P(t, 7.25, 7.55));
+  vis(gn2, t >= 6.12 && t < 7.55); vis(fine, t < 7.55);
+  gn2.style.transform = `translate3d(${420 + away * 700}px,${30 - away * 500 + Math.sin(t * 2.4 + 1) * 8}px,-80px) rotateY(${-16 + Math.sin(t * 1.5 + 1) * 10}deg) scale(${Math.max(.001, spring(t - 6.12, 0, 13, 6))}) rotateZ(${L(14, -3, E.outC(kg2))}deg)`;
   const nf = Math.floor(P(t, 6.68, 7.15) * FINE.length);
   fine.textContent = FINE.slice(0, nf) + (nf < FINE.length && t > 6.68 && Math.sin(t * 30) > 0 ? '▌' : '');
-  fine.style.transform = `translate3d(240px,150px,-80px) rotateY(${-16 + Math.sin(t * 1.5 + 1) * 10}deg)`;
-  // gift drops, lid pops, apps fly out
-  const kd = P(t, 7.23, 7.62);
-  vis(gift, t >= 7.23);
-  const gy = L(-1300, 210, E.outBounce(kd));
-  const squash = t > 7.3 && t < 7.79 ? 1 + .12 * Math.exp(-14 * (t - 7.37)) * Math.sin((t - 7.37) * 40) : 1;
-  gift.style.transform = `translate3d(0,${gy}px,250px) rotateY(${L(160, 24, E.outC(kd)) + Math.sin(t * 2) * 4}deg) scale3d(${2 - squash},${squash},${2 - squash})`;
-  const kl = P(t, 7.79, 8.3);
-  const pre = t < 7.79 ? Math.max(0, Math.sin((t - 7.6) * 60)) * 10 * P(t, 7.6, 7.79) : 0;
-  lid.style.transform = `translate3d(${-kl * 420}px,${-152 - pre - E.outC(kl) * 520 + kl * kl * 260}px,${kl * 120}px) rotateZ(${-kl * 70}deg) rotateX(${kl * 40}deg)`;
-  vis(rays, t >= 7.79);
-  rays.style.transform = `translate3d(0,-130px,0) rotateY(${-L(160, 24, 1)}deg) rotate(${t * 40}deg) scale(${E.outBack(P(t, 7.79, 8.0))})`;
-  rays.style.opacity = .9;
+  fine.style.transform = `translate3d(${150 + away * 900}px,${140 - away * 420}px,-80px) rotateY(${-16 + Math.sin(t * 1.5 + 1) * 10}deg)`;
+  // Pro gift lands with a thud and glows; then the tiny Plus gift plops in front
+  const kp = P(t, 7.23, 7.5);
+  vis(proGift, t >= 7.23);
+  const pThud = t > 7.36 ? 1 + .07 * Math.exp(-12 * (t - 7.36)) * Math.sin((t - 7.36) * 34) : 1;
+  proGift.style.transform = `translate3d(-160px,${L(-1700, 330 - 180, E.outBounce(kp))}px,-560px) rotateY(${L(-60, -18, E.outC(kp)) + Math.sin(t * 1.6) * 3}deg) scale3d(${2 - pThud},${pThud},${2 - pThud})`;
+  vis(rays, t >= 7.36);
+  rays.style.transform = `translate3d(0,-60px,-240px) rotateY(18deg) rotate(${t * 30}deg) scale(${E.outBack(P(t, 7.36, 7.6))})`;
+  proCrown.style.transform = `rotate(${Math.sin(t * 5) * 6}deg) translateY(${Math.sin(t * 4) * 6}px)`;
+  const kd = P(t, 7.45, 7.72);
+  vis(gift, t >= 7.45);
+  const gy = L(-1300, 330 - 70, E.outBounce(kd));
+  const squash = t > 7.5 && t < 7.79 ? 1 + .16 * Math.exp(-14 * (t - 7.55)) * Math.sin((t - 7.55) * 44) : 1;
+  gift.style.transform = `translate3d(90px,${gy}px,330px) rotateY(${L(140, 20, E.outC(kd)) + Math.sin(t * 2) * 4}deg) scale3d(${2 - squash},${squash},${2 - squash})`;
+  const kl = P(t, 7.79, 8.25);
+  const pre = t < 7.79 ? Math.max(0, Math.sin((t - 7.65) * 60)) * 6 * P(t, 7.65, 7.79) : 0;
+  lid.style.transform = `translate3d(${-kl * 260}px,${-70 - gift.lh / 2 - pre - E.outC(kl) * 300 + kl * kl * 160}px,${kl * 80}px) rotateZ(${-kl * 70}deg) rotateX(${kl * 40}deg)`;
   const kf = E.inQ(P(t, 8.0, 8.58));
   vis(flyA, t >= 8.0); vis(flyB, t >= 8.0);
-  flyA.style.transform = `translate3d(${-kf * 620}px,${L(90, -120, kf)}px,${L(250, 1250, kf)}px) rotateZ(${-kf * 300}deg) rotateY(${kf * 40}deg)`;
-  flyB.style.transform = `translate3d(${kf * 620}px,${L(90, -60, kf)}px,${L(250, 1250, kf)}px) rotateZ(${kf * 300}deg) rotateY(${-kf * 40}deg)`;
+  flyA.style.transform = `translate3d(${90 - kf * 610}px,${L(190, -40, kf)}px,${L(330, 1150, kf)}px) rotateZ(${-kf * 300}deg) rotateY(${kf * 40}deg) scale(${L(.35, 1, kf)})`;
+  flyB.style.transform = `translate3d(${90 + kf * 560}px,${L(190, 0, kf)}px,${L(330, 1150, kf)}px) rotateZ(${kf * 300}deg) rotateY(${-kf * 40}deg) scale(${L(.35, 1, kf)})`;
   // confetti
   const g = Cconf.getContext('2d'); g.clearRect(0, 0, 1920, 1080);
   const c1 = project(-430, -200, -160, camC(5.0)); confetti(g, t, 5.0, c1.x, c1.y, 5, 110, 1.1);
-  const c2 = project(0, 60, 250, camC(7.79)); confetti(g, t, 7.79, c2.x, c2.y, 9, 120, 1.25, true);
+  const c2 = project(90, 180, 330, camC(7.79)); confetti(g, t, 7.79, c2.x, c2.y, 9, 70, .8, true);
+  const c3 = project(-160, -260, -560, camC(7.4)); confetti(g, t, 7.4, c3.x, c3.y, 13, 90, 1.0);
   C.style.opacity = 1;
 }
 
@@ -454,9 +481,9 @@ function renderD(t) {
   const merged = t >= imp;
   vis(wGPT, !merged); vis(wCdx, !merged); vis(wM, merged); vis(eq, t >= 9.55); vis(Dburst, merged && t < 9.8);
   if (!merged) {
-    const x = (1 - E.outBack(ke, 1.5)) * -1300 + kr * 420, ry = L(70, 0, E.outC(ke)) + kr * 28;
-    wGPT.style.transform = `translate3d(${x}px,${bob}px,${kr * 140}px) rotateY(${ry}deg) rotateZ(${-kr * 4}deg)`;
-    wCdx.style.transform = `translate3d(${-x}px,${-bob}px,${kr * 140}px) rotateY(${-ry}deg) rotateZ(${kr * 4}deg)`;
+    const x = (1 - E.outBack(ke, 1.5)) * -1300, ry = L(70, 0, E.outC(ke)) + kr * 28;
+    wGPT.style.transform = `translate3d(${x + kr * 320}px,${bob}px,${kr * 140}px) rotateY(${ry}deg) rotateZ(${-kr * 4}deg)`;
+    wCdx.style.transform = `translate3d(${-x - kr * 340}px,${-bob}px,${kr * 140}px) rotateY(${-ry}deg) rotateZ(${kr * 4}deg)`;
   } else {
     const dt = t - imp;
     const s = spring(dt, 1.35, 16, 7);
@@ -473,12 +500,16 @@ function renderD(t) {
     vis(mWarn, t >= 9.72 && Math.sin(t * 40) > -.3);
     eq.style.transform = `scale(${E.outBack(P(t, 9.55, 9.72), 2.5)}) rotate(${-10 + Math.sin(t * 12) * 2}deg)`;
   }
-  // cursor gives up
-  css(cursorD, { transform: `translate(${L(1500, 1560, P(t, 8.6, 10))}px,${L(820, 860, P(t, 8.6, 10))}px)` });
+  // the Pro window just floats above it all
+  const kpw = P(t, 8.62, 9.0), smug = t > 9.62 ? Math.exp(-6 * (t - 9.62)) * Math.sin((t - 9.62) * 22) : 0;
+  wPro.style.transform = `translate3d(0,${(1 - E.outBack(kpw, 1.6)) * -560 + Math.sin(t * 2.6) * 10 - smug * 16}px,-60px) rotateY(${-16 + Math.sin(t * 1.8) * 4}deg) rotateZ(${3 + smug * 4}deg)`;
+  pBar.style.backgroundPosition = `${(t * 260) % 520}px 0`;
+  proSpk.forEach((e, i) => { e.style.transform = `scale(${P(t, 8.8, 9.0) * (.55 + .45 * Math.abs(Math.sin(t * 5 + i * 1.3)))}) rotate(${t * 40 + i * 20}deg)`; });
+  css(cursorD, { transform: `translate(${L(1100, 1140, P(t, 8.6, 10))}px,${L(840, 870, P(t, 8.6, 10))}px)` });
   deskD.batt.style.width = (merged ? 86 * (1 - .9 * P(t, 9.6, 9.85)) : 86) + '%';
   deskD.batt.style.background = merged && t > 9.75 ? '#ff3b5c' : '';
   const g = Dconf.getContext('2d'); g.clearRect(0, 0, 1920, 1080);
-  confetti(g, t, imp, 960, 300, 31, 110, 1.5, true);
+  confetti(g, t, imp, 770, 360, 31, 110, 1.5, true);
 }
 
 function renderCaps(t) {
