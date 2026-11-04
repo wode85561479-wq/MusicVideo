@@ -1,7 +1,7 @@
 {
   "name": "preview",
   "version": "1.0.0",
-  "description": "",
+  "description": "尊贵的下一档 · 10 秒风格预览",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
     "@fontsource/noto-sans-sc": "^5.3.1",
     "@fontsource/press-start-2p": "^5.3.0",
     "@fontsource/vt323": "^5.3.0",
-    "@fontsource/zcool-kuaile": "^5.3.0"
+    "@fontsource/zcool-kuaile": "^5.3.0",
+    "playwright": "^1.63.0"
   }
 }
