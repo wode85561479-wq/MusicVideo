@@ -8,7 +8,6 @@
 <meta name="theme-color" content="#04060d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=ZCOOL+XiaoWei&display=swap">
 <style>
 /* Layout: one full-bleed winter night; the HUD floats in the corners on smoked glass and the tree owns the middle */
 :root {
@@ -106,6 +105,8 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
 }
 .lens-view { position: relative; aspect-ratio: 3 / 4; max-width: 100%; border-radius: 9px; overflow: hidden; background: #000; }
 .lens-view video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lens-view canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.gesture-now { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
 .lens-tag {
   position: absolute; top: 5px; left: 5px;
   display: inline-flex; align-items: center; gap: 4px;
@@ -194,11 +195,11 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
 .sheet-kicker { margin: 0; font-size: 12px; letter-spacing: 0.24em; color: var(--gold); }
 .sheet-card h2 { margin: -6px 0 0; font: 400 25px/1.3 var(--font-display); letter-spacing: 0.05em; text-wrap: balance; }
-.gestures { list-style: none; margin: 0; padding: 0; display: grid; gap: 13px; }
-.gestures li { display: grid; grid-template-columns: 34px minmax(0, 1fr); column-gap: 12px; row-gap: 1px; align-items: center; }
-.gestures svg { grid-row: span 2; width: 34px; height: 34px; }
-.gestures b { font-size: 15px; font-weight: 600; letter-spacing: 0.04em; }
-.gestures span { font-size: 13px; line-height: 1.5; color: var(--ink-dim); }
+.gestures { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+.gestures li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 9px; row-gap: 2px; align-content: start; }
+.gestures .g-ico { grid-row: span 2; font-size: 24px; line-height: 30px; text-align: center; }
+.gestures b { font-size: 14px; font-weight: 600; line-height: 1.35; letter-spacing: 0.04em; }
+.gestures .g-txt { font-size: 12px; line-height: 1.5; color: var(--ink-dim); }
 .sheet-actions { display: grid; gap: 10px; }
 .btn {
   height: 48px; border-radius: 24px; box-sizing: border-box;
@@ -243,13 +244,14 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
   <aside class="lens" id="lens" hidden aria-label="后置摄像头画面">
     <div class="lens-view">
       <video id="cam" playsinline muted autoplay></video>
+      <canvas id="handCanvas" aria-hidden="true"></canvas>
       <span class="lens-tag">后置镜头</span>
       <div class="lens-charge"><i id="chargeBar"></i></div>
     </div>
     <dl class="lens-meters">
+      <div><dt>手势</dt><dd><span class="gesture-now" id="gestureName">未开启</span></dd></div>
       <div><dt>取色</dt><dd><i class="swatch" id="swatch"></i><span id="colorName">没有</span></dd></div>
       <div><dt>动感</dt><dd><span class="bar"><i id="motionBar"></i></span></dd></div>
-      <div><dt>光线</dt><dd><span class="bar"><i id="lightBar"></i></span></dd></div>
     </dl>
   </aside>
 
@@ -282,41 +284,22 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
 
 <section class="sheet" id="startSheet" role="dialog" aria-labelledby="sheetTitle">
   <div class="sheet-card">
-    <p class="sheet-kicker">后置摄像头就是遥控器</p>
-    <h2 id="sheetTitle">举起手机，用镜头指挥这棵树</h2>
+    <p class="sheet-kicker">把手伸到手机背面的镜头前</p>
+    <h2 id="sheetTitle">用手势指挥这棵树</h2>
     <ul class="gestures">
-      <li>
-        <svg viewBox="0 0 34 34" fill="none" aria-hidden="true">
-          <circle cx="17" cy="17" r="13" stroke="#f2c46a" stroke-width="1.5"/>
-          <circle cx="12.5" cy="14" r="3.2" fill="#ec4d63"/><circle cx="21.5" cy="14" r="3.2" fill="#38b27e"/><circle cx="17" cy="21.5" r="3.2" fill="#6aa8ff"/>
-        </svg>
-        <b>对准彩色的东西</b>
-        <span>树上的灯会变成镜头里看到的颜色</span>
-      </li>
-      <li>
-        <svg viewBox="0 0 34 34" fill="none" stroke="#f2c46a" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
-          <circle cx="9" cy="17" r="3" fill="#f2c46a" stroke="none"/>
-          <path d="M15 10.5c3.5 3.8 3.5 9.2 0 13"/><path d="M20 7c5.6 5.8 5.6 14.2 0 20"/><path d="M25 4c7.4 7.6 7.4 18.4 0 26" opacity=".55"/>
-        </svg>
-        <b>在镜头前挥手</b>
-        <span>挥得越快，光点散得越开；左右划过还能让树转起来</span>
-      </li>
-      <li>
-        <svg viewBox="0 0 34 34" fill="none" aria-hidden="true">
-          <circle cx="17" cy="17" r="13" stroke="#f2c46a" stroke-width="1.5"/>
-          <circle cx="17" cy="17" r="5" stroke="#f2c46a" stroke-width="1.5" opacity=".6"/>
-          <rect x="5" y="12" width="17" height="19" rx="7" fill="#f2c46a" opacity=".5"/>
-        </svg>
-        <b>捂住镜头，再松开</b>
-        <span>蓄满能量后炸开，换成下一种特效</span>
-      </li>
+      <li><span class="g-ico" aria-hidden="true">☝️</span><b>伸出食指</b><span class="g-txt">指尖变成魔法棒，在空中划出星光</span></li>
+      <li><span class="g-ico" aria-hidden="true">🖐️</span><b>张开手掌</b><span class="g-txt">光点四散，手越靠近镜头散得越开</span></li>
+      <li><span class="g-ico" aria-hidden="true">✊</span><b>握拳，再张开</b><span class="g-txt">先聚成能量球，张开就炸开换特效</span></li>
+      <li><span class="g-ico" aria-hidden="true">✌️</span><b>比个耶</b><span class="g-txt">放烟花，一直比着就一直放</span></li>
+      <li><span class="g-ico" aria-hidden="true">🤏</span><b>捏住拖动</b><span class="g-txt">拇指和食指捏住，左右拖动转树</span></li>
+      <li><span class="g-ico" aria-hidden="true">👍</span><b>点个赞</b><span class="g-txt">落下金色星雨</span></li>
     </ul>
     <div class="sheet-actions">
       <button class="btn primary" id="startCam" type="button">开启后置摄像头</button>
       <button class="btn ghost" id="startDemo" type="button">先不用摄像头，直接看</button>
     </div>
     <p class="sheet-note" id="startNote" hidden></p>
-    <p class="sheet-foot">触屏也能玩：点一下放出光点，按住屏幕再松开换特效，左右拖动让树转。</p>
+    <p class="sheet-foot">镜头对准彩色的东西会取色，捂住镜头再拿开也能换特效。没开摄像头时：点屏幕放光点，按住再松手换特效，左右拖动让树转。</p>
     <input class="visually-hidden" id="photoInput" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
   </div>
 </section>
@@ -345,10 +328,18 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } },
   };
 
+  // fonts load without blocking first paint (the page still renders if the font host is unreachable)
+  try {
+    const fl = document.createElement('link');
+    fl.rel = 'stylesheet';
+    fl.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=ZCOOL+XiaoWei&display=swap';
+    document.head.appendChild(fl);
+  } catch (e) { /* fonts are optional */ }
+
   const ui = {
     sheet: $('startSheet'), startCam: $('startCam'), startDemo: $('startDemo'), note: $('startNote'), photoInput: $('photoInput'),
     lens: $('lens'), video: $('cam'), chargeBar: $('chargeBar'), swatch: $('swatch'), colorName: $('colorName'),
-    motionBar: $('motionBar'), lightBar: $('lightBar'), toast: $('toast'),
+    motionBar: $('motionBar'), handCanvas: $('handCanvas'), gestureName: $('gestureName'), toast: $('toast'),
     modeLine: $('modeLine'), modeName: $('modeName'), modeEn: $('modeEn'), tintChip: $('tintChip'), tintDot: $('tintDot'), tintName: $('tintName'),
     dots: $('modeDots'), prev: $('prevMode'), next: $('nextMode'), help: $('helpBtn'), music: $('musicBtn'), camBtn: $('camBtn'),
   };
@@ -1173,6 +1164,8 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
         if (mx > 0.18 && c > 0.1 && c / mx > 0.33) {
           let hh = mx === r ? (g - b) / c : mx === g ? (b - r) / c + 2 : (r - g) / c + 4;
           hh = (hh / 6 + 1) % 1;
+          // skip skin tones (red-orange, moderately saturated) so a hand in view does not tint the tree
+          if ((hh < 0.12 || hh > 0.97) && c / mx < 0.65) continue;
           const w = cw * (c / mx) * c;
           hx += Math.cos(hh * TAU) * w; hy += Math.sin(hh * TAU) * w; hw += w; wCol += cw;
         }
@@ -1216,7 +1209,9 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
     cam.covered = covered;
     cam.lum = s.lum;
 
-    if (cam.warm && !covered) {
+    // while a hand is being tracked, gestures drive the tree: frame-difference motion and
+    // color sampling pause so the moving, skin-colored hand does not trigger them
+    if (cam.warm && !covered && !hand.present) {
       // motion energy above an adaptive noise floor
       cam.floor += (s.frac - cam.floor) * (s.frac < cam.floor ? 0.2 : 0.01);
       const raw = clamp((s.frac - cam.floor - 0.02) / 0.2, 0, 1);
@@ -1242,10 +1237,9 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
       } else if (cam.colorAmt < 0.2) cam.lastNamed = '';
     } else {
       cam.energy *= 0.7;
+      cam.hist.length = 0;
     }
 
-    ui.motionBar.style.width = (cam.energy * 100).toFixed(0) + '%';
-    ui.lightBar.style.width = (clamp(s.lum / 0.6, 0, 1) * 100).toFixed(0) + '%';
     if (cam.colorAmt > 0.35) {
       ui.swatch.style.background = hueCss(cam.hue);
       ui.swatch.style.boxShadow = '0 0 8px ' + hueCss(cam.hue);
@@ -1319,8 +1313,10 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
       camOn = true; camBlocked = false; resetCam();
       ui.lens.hidden = false;
       closeSheet();
-      toast('后置摄像头已连接，在镜头前挥挥手试试', 3200);
+      if (hand.status === 'ready') toast('后置摄像头已连接，把手伸到镜头前试试', 3200);
+      else toast('后置摄像头已连接，手势识别加载中…', 3200);
       keepAwake();
+      loadHands();
     } catch (err) {
       failCamera(err && err.name);
     } finally {
@@ -1340,6 +1336,8 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
     if (camStream) camStream.getTracks().forEach((t) => t.stop());
     camStream = null; camOn = false; ui.video.srcObject = null; ui.lens.hidden = true;
     resetCam();
+    hand.present = false; hand.g = 'none'; hand.raw = 'none'; hand.rawN = 0;
+    drawHand(null); showGesture();
     refreshControls();
     toast('摄像头已关闭');
   }
@@ -1470,6 +1468,255 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
   canvas.addEventListener('pointerup', endPtr);
   canvas.addEventListener('pointercancel', endPtr);
 
+  // ---------------------------------------------------------------- hand gestures (MediaPipe Hand Landmarker, loaded after the camera starts)
+  const MP_VER = '0.10.14';
+  const MP_BASES = ['https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@' + MP_VER, 'https://unpkg.com/@mediapipe/tasks-vision@' + MP_VER];
+  const MODEL_URLS = ['hand_landmarker.task', 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'];
+  const G_LABEL = { none: '没看到手', other: '认不出', point: '☝️ 食指', open: '🖐️ 张开', fist: '✊ 握拳', victory: '✌️ 比耶', pinch: '🤏 捏住', thumb: '👍 点赞' };
+  const G_HINT = {
+    point: '☝️ 指尖就是魔法棒，在空中画画吧',
+    open: '🖐️ 手越靠近镜头，光点散得越开',
+    pinch: '🤏 捏住左右拖动，转动圣诞树',
+  };
+  const HAND_EDGES = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [5, 9], [9, 10], [10, 11], [11, 12],
+    [9, 13], [13, 14], [14, 15], [15, 16], [13, 17], [17, 18], [18, 19], [19, 20], [0, 17]];
+  const hand = {
+    status: 'off', lm: null, delegate: 'GPU', errors: 0, lastRun: 0, lastVT: -1, interval: 50,
+    present: false, seenAt: 0, raw: 'none', rawN: 0, g: 'none', since: 0,
+    tipX: 0.5, tipY: 0.5, palmX: 0.5, palmVx: 0, size: 0, fwT: 0, rain: 0, hinted: {}, toastAt: {},
+  };
+  let visionMod = null, fileset = null, modelBuf = null;
+
+  function showGesture() {
+    ui.gestureName.textContent = hand.status === 'ready' ? G_LABEL[hand.g] || G_LABEL.other
+      : hand.status === 'loading' ? '加载中…' : hand.status === 'failed' ? '用不了' : '未开启';
+  }
+  function createLandmarker(delegate) {
+    return visionMod.HandLandmarker.createFromOptions(fileset, {
+      baseOptions: { modelAssetBuffer: modelBuf.slice(), delegate },
+      runningMode: 'VIDEO', numHands: 1,
+      minHandDetectionConfidence: 0.55, minHandPresenceConfidence: 0.5, minTrackingConfidence: 0.5,
+    });
+  }
+  function handFail() {
+    hand.status = 'failed'; hand.lm = null; showGesture();
+    toast('手势识别没能加载（多半是网络原因）；挥手、取色、捂镜头照样能用', 4200);
+  }
+  async function loadHands() {
+    if (hand.status === 'loading' || hand.status === 'ready') return;
+    hand.status = 'loading'; showGesture();
+    for (const base of MP_BASES) {
+      try {
+        visionMod = await import(base + '/vision_bundle.mjs');
+        fileset = await visionMod.FilesetResolver.forVisionTasks(base + '/wasm');
+        break;
+      } catch (e) { visionMod = null; }
+    }
+    if (!visionMod) { handFail(); return; }
+    for (const url of MODEL_URLS) {
+      try {
+        const r = await fetch(url);
+        if (!r.ok) continue;
+        const buf = new Uint8Array(await r.arrayBuffer());
+        if (buf.length > 1000000) { modelBuf = buf; break; }
+      } catch (e) { /* try the next copy of the model */ }
+    }
+    if (!modelBuf) { handFail(); return; }
+    for (const delegate of ['GPU', 'CPU']) {
+      try { hand.lm = await createLandmarker(delegate); hand.delegate = delegate; break; } catch (e) { hand.lm = null; }
+    }
+    if (!hand.lm) { handFail(); return; }
+    hand.status = 'ready'; hand.errors = 0; showGesture();
+    if (camOn) toast('手势识别准备好了，把手伸到镜头前试试', 3200);
+  }
+
+  // which fingers are straight, from the joint angles of the 21 landmarks
+  function classify(P) {
+    const dist = (a, b) => Math.hypot(P[a].x - P[b].x, P[a].y - P[b].y, P[a].z - P[b].z);
+    const palm = dist(0, 9) || 1e-3;
+    const bend = (m, p, t) => { // cosine at the middle joint: 1 = straight, -1 = folded back
+      const ax = P[p].x - P[m].x, ay = P[p].y - P[m].y, az = P[p].z - P[m].z;
+      const bx = P[t].x - P[p].x, by = P[t].y - P[p].y, bz = P[t].z - P[p].z;
+      return (ax * bx + ay * by + az * bz) / (Math.hypot(ax, ay, az) * Math.hypot(bx, by, bz) + 1e-6);
+    };
+    const straight = (m, p, t) => bend(m, p, t) > 0.5 && dist(t, 0) > dist(p, 0) * 1.1;
+    const idx = straight(5, 6, 8), mid = straight(9, 10, 12), ring = straight(13, 14, 16), pinky = straight(17, 18, 20);
+    const thumbOut = dist(4, 9) > palm * 0.8 && dist(4, 5) > palm * 0.45;
+    // a pinch keeps the index finger reaching out; in a fist it is folded back onto its own knuckle
+    const pinch = dist(4, 8) < palm * 0.3 && dist(8, 5) > palm * 0.5 && bend(5, 6, 8) > -0.4;
+    let g = 'other';
+    if (pinch) g = 'pinch';
+    else if (idx && mid && ring && (pinky || thumbOut)) g = 'open';
+    else if (idx && mid && !ring && !pinky) g = 'victory';
+    else if (idx && !mid && !ring && !pinky) g = 'point';
+    else if (!idx && !mid && !ring && !pinky) {
+      const thumbUp = P[4].y < P[5].y - palm * 0.3 && dist(4, 5) > palm * 0.5;
+      g = thumbUp ? 'thumb' : 'fist';
+    }
+    return { g, palm };
+  }
+
+  function setGesture(g, now) {
+    const prev = hand.g;
+    hand.g = g; hand.since = now;
+    showGesture();
+    const canToast = (k) => { if (now - (hand.toastAt[k] || 0) < 4000) return false; hand.toastAt[k] = now; return true; };
+    if (G_HINT[g] && !hand.hinted[g]) { hand.hinted[g] = true; toast(G_HINT[g], 2800); }
+    if (g === 'victory') {
+      launchFirework(); setTimeout(launchFirework, 200); hand.fwT = 0.9;
+      if (canToast('victory')) toast('✌️ 放烟花！');
+    } else if (g === 'thumb') {
+      U.uPulse.value = 1.2; Sound.chime();
+      if (canToast('thumb')) toast('👍 收到你的赞，金色星雨来了');
+    } else if (g === 'open' && prev !== 'fist') {
+      explodeV += 3;
+    }
+  }
+  function stabilize(g, now) {
+    if (g === hand.raw) hand.rawN++; else { hand.raw = g; hand.rawN = 1; }
+    const need = g === 'point' || g === 'open' || g === 'pinch' ? 2 : 3;
+    if (hand.rawN >= need && g !== hand.g) setGesture(g, now);
+  }
+  function onHand(L, now) {
+    const vw = ui.video.videoWidth || 4, vh = ui.video.videoHeight || 3, ar = vw / vh;
+    const P = L.map((p) => ({ x: p.x * ar, y: p.y, z: p.z * ar }));
+    const r = classify(P);
+    const gap = (now - hand.seenAt) / 1000;
+    const palmX = (L[0].x + L[5].x + L[9].x + L[13].x + L[17].x) / 5;
+    hand.palmVx = gap < 0.25 ? (palmX - hand.palmX) / Math.max(gap, 0.016) : 0;
+    hand.palmX = palmX;
+    hand.size = r.palm;
+    const pinching = r.g === 'pinch';
+    const tx = pinching ? (L[4].x + L[8].x) / 2 : L[8].x;
+    const ty = pinching ? (L[4].y + L[8].y) / 2 : L[8].y;
+    if (hand.g === 'pinch' && pinching && gap < 0.25) {
+      const dx = tx - hand.tipX;
+      tree.rotation.y += dx * 7;
+      spinV = clamp(((dx * 7) / Math.max(gap, 0.016)) * 0.6, -8, 8);
+    }
+    hand.tipX = tx; hand.tipY = ty;
+    hand.present = true; hand.seenAt = now;
+    stabilize(r.g, now);
+  }
+  function onNoHand(now) {
+    hand.present = false; hand.raw = 'none'; hand.rawN = 0;
+    if (hand.g !== 'none' && now - hand.seenAt > 350) setGesture('none', now);
+  }
+
+  const hctx = ui.handCanvas.getContext('2d');
+  function drawHand(L) {
+    const c = ui.handCanvas, w = c.clientWidth, h = c.clientHeight;
+    if (!w || !h) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (c.width !== Math.round(w * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+    hctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    hctx.clearRect(0, 0, w, h);
+    if (!L) return;
+    const vw = ui.video.videoWidth || w, vh = ui.video.videoHeight || h;
+    const s = Math.max(w / vw, h / vh), ox = (w - vw * s) / 2, oy = (h - vh * s) / 2;
+    const X = (p) => ox + p.x * vw * s, Y = (p) => oy + p.y * vh * s;
+    hctx.lineWidth = 1.6; hctx.lineCap = 'round';
+    hctx.strokeStyle = 'rgba(242, 196, 106, 0.95)';
+    hctx.beginPath();
+    for (const [a, b] of HAND_EDGES) { hctx.moveTo(X(L[a]), Y(L[a])); hctx.lineTo(X(L[b]), Y(L[b])); }
+    hctx.stroke();
+    hctx.fillStyle = '#ffffff';
+    for (const i of [4, 8, 12, 16, 20]) { hctx.beginPath(); hctx.arc(X(L[i]), Y(L[i]), 2.2, 0, TAU); hctx.fill(); }
+  }
+
+  function runHands(now) {
+    const vid = ui.video;
+    if (hand.status !== 'ready' || !hand.lm || vid.readyState < 2 || now - hand.lastRun < hand.interval) return;
+    if (vid.currentTime === hand.lastVT) return;
+    hand.lastRun = now; hand.lastVT = vid.currentTime;
+    let res;
+    const t0 = performance.now();
+    try { res = hand.lm.detectForVideo(vid, now); }
+    catch (e) {
+      hand.errors++;
+      if (hand.errors > 5 && hand.delegate === 'GPU') {
+        hand.status = 'loading'; showGesture();
+        createLandmarker('CPU').then((lm) => {
+          try { hand.lm.close(); } catch (_) { /* old instance may already be gone */ }
+          hand.lm = lm; hand.delegate = 'CPU'; hand.errors = 0; hand.status = 'ready'; showGesture();
+        }, handFail);
+      } else if (hand.errors > 20) handFail();
+      return;
+    }
+    hand.interval = performance.now() - t0 > 30 ? 90 : 50;
+    const L = res && res.landmarks && res.landmarks[0];
+    if (L && L.length === 21) onHand(L, now); else onNoHand(now);
+    drawHand(L && L.length === 21 ? L : null);
+  }
+
+  // the fingertip becomes a wand on a plane just in front of the tree
+  const wandPlane = new THREE.Plane(new V3(0, 0, 1), -1.8), wandPos = new V3(), wandPrev = new V3(), wandCol = new V3();
+  let wandA = 0, wandInit = false;
+  const wand = new THREE.Sprite(new THREE.SpriteMaterial(Object.assign({ map: glowTex, color: 0xffffff, opacity: 0 }, additive)));
+  wand.visible = false;
+  scene.add(wand);
+  function wandTrail(a, b) {
+    const n = Math.min(36, 1 + Math.floor(a.distanceTo(b) / 0.035));
+    for (let k = 0; k < n; k++) {
+      const t = (k + rand()) / n;
+      if (rand() < 0.25) tmpC.copy(WHITE); else pickColor(tmpC, 1.7);
+      spawn(a.x + (b.x - a.x) * t + (rand() - 0.5) * 0.05, a.y + (b.y - a.y) * t + (rand() - 0.5) * 0.05, a.z + (b.z - a.z) * t,
+        (rand() - 0.5) * 0.5, (rand() - 0.5) * 0.5 - 0.15, (rand() - 0.5) * 0.5,
+        tmpC, 0.07 + rand() * 0.07, 0.9 + rand() * 0.8, 0.8, 0.45, 0);
+    }
+    const h = (b.y - T.BASE) / T.H;
+    if (h > 0 && h < 1 && Math.abs(b.x) < treeR(h) + 0.25) {
+      U.uPulse.value = Math.max(U.uPulse.value, 0.45);
+      if (rand() < 0.35) treeSpark();
+    }
+  }
+  function goldRain() {
+    tmpC.copy(rand() < 0.3 ? WHITE : GOLD).multiplyScalar(1.5);
+    spawn((rand() - 0.5) * 7, 5.2 + rand() * 1.2, (rand() - 0.5) * 4, (rand() - 0.5) * 0.3, -1.2 - rand() * 1.5, 0,
+      tmpC, 0.07 + rand() * 0.08, 2.4 + rand(), 0.4, 0.9, 0);
+  }
+  function updateWand(dt, t) {
+    const on = hand.g === 'point' || hand.g === 'pinch';
+    wandA += ((on ? 1 : 0) - wandA) * damp(dt, 10);
+    if (on) {
+      ndc.set((hand.tipX - 0.5) * 2.3, (0.5 - hand.tipY) * 2.3);
+      raycaster.setFromCamera(ndc, camera);
+      if (raycaster.ray.intersectPlane(wandPlane, hitP)) {
+        if (!wandInit) { wandPos.copy(hitP); wandPrev.copy(hitP); wandInit = true; }
+        wandPos.lerp(hitP, damp(dt, 14));
+      }
+      if (hand.g === 'point') wandTrail(wandPrev, wandPos);
+      wandPrev.copy(wandPos);
+    } else wandInit = false;
+    wand.visible = wandA > 0.01;
+    if (!wand.visible) return;
+    wand.position.copy(wandPos);
+    wand.material.opacity = wandA * 0.95;
+    wand.scale.setScalar((hand.g === 'pinch' ? 1.5 : 1.0) * (0.9 + 0.12 * Math.sin(t * 9)));
+    if (hand.g === 'pinch') wandCol.set(1, 0.8, 0.4); else hsv(t * 0.15, 0.3, 1, wandCol);
+    wand.material.color.setRGB(wandCol.x, wandCol.y, wandCol.z);
+  }
+  // runs every frame while the camera is on; returns how far the particles should fly apart
+  function updateHand(dt, now, t) {
+    runHands(now);
+    let e = 0;
+    const g = hand.g;
+    if (g === 'open') {
+      e = 0.45 + 0.65 * clamp((hand.size - 0.12) / 0.22, 0, 1);
+      if (Math.abs(hand.palmVx) > 0.6) spinV += (clamp(hand.palmVx, -2.5, 2.5) * 1.8 - spinV) * damp(dt, 5);
+    } else if (g === 'victory') {
+      hand.fwT -= dt;
+      if (hand.fwT <= 0) { launchFirework(); hand.fwT = 0.75; }
+    } else if (g === 'thumb') {
+      hand.rain += (reduceMotion ? 40 : 140) * dt;
+      while (hand.rain >= 1) { goldRain(); hand.rain -= 1; }
+      U.uPulse.value = Math.max(U.uPulse.value, 0.3);
+    }
+    hand.palmVx *= Math.exp(-dt * 6);
+    updateWand(dt, t);
+    return e;
+  }
+
   // ---------------------------------------------------------------- palette targets
   let tintAmt = 0;
   const tintCols = [new V3(), new V3(), new V3(), new V3()];
@@ -1516,20 +1763,26 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
       autoHold = c > 10.6 && c < 12.3;
     } else { autoEnergy = 0; autoHold = false; autoT = 4; }
 
-    const energy = Math.max(camOn ? cam.energy : 0, autoEnergy);
+    const handEnergy = camOn ? updateHand(dt, nowMs, time) : 0;
+    const handFist = camOn && hand.g === 'fist';
+    const energy = Math.max(camOn && !hand.present ? cam.energy : 0, autoEnergy, handEnergy);
     const touchHold = !!(ptr && !ptr.moved && nowMs - ptr.t > 380);
     const camCover = camOn && cam.covered && !cam.darkLock;
-    const covering = touchHold || autoHold || camCover;
+    const covering = touchHold || autoHold || camCover || handFist;
     if (covering) coverT += dt;
     else { if (charge > 0.6) release(); coverT = 0; }
     const chT = covering ? clamp((coverT - 0.15) / 1.1, 0, 1) : 0;
     charge += (chT - charge) * damp(dt, covering ? 5 : 9);
     U.uCharge.value = charge;
-    if ((touchHold || camCover) && !autoHold) {
-      if (charge > 0.12 && chargeMsg < 1) { chargeMsg = 1; toast(camCover ? '蓄力中…把手拿开就换特效' : '蓄力中…松手就换特效', 3000); }
-      if (charge > 0.6 && chargeMsg < 2) { chargeMsg = 2; toast(camCover ? '能量满了，拿开手！' : '能量满了，松手！', 2400); }
+    if ((touchHold || camCover || handFist) && !autoHold) {
+      const how = handFist ? 0 : camCover ? 1 : 2;
+      if (charge > 0.12 && chargeMsg < 1) { chargeMsg = 1; toast(['✊ 蓄力中…张开手就换特效', '蓄力中…把手拿开就换特效', '蓄力中…松手就换特效'][how], 3000); }
+      if (charge > 0.6 && chargeMsg < 2) { chargeMsg = 2; toast(['能量满了，张开手！', '能量满了，拿开手！', '能量满了，松手！'][how], 2400); }
     } else if (!covering) chargeMsg = 0;
-    if (camOn) ui.chargeBar.style.width = (charge * 100).toFixed(0) + '%';
+    if (camOn) {
+      ui.chargeBar.style.width = (charge * 100).toFixed(0) + '%';
+      ui.motionBar.style.width = (clamp(energy, 0, 1) * 100).toFixed(0) + '%';
+    }
 
     // spring: particles fly out with motion and snap back with a little overshoot
     explodeV += (14 * (energy * 1.1 - explode) - 5.4 * explodeV) * dt;
@@ -1539,8 +1792,12 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
 
     const m = MODES[modeIdx];
     const baseSpin = m.spin * (reduceMotion ? 0.4 : 1) + energy * 1.4;
-    if (!(ptr && ptr.moved)) spinV += (baseSpin - spinV) * damp(dt, 0.9);
-    tree.rotation.y += spinV * dt;
+    // while a finger or a pinch is holding the tree, it turns only with the hand
+    const grabbing = (ptr && ptr.moved) || hand.g === 'pinch';
+    if (!grabbing) {
+      spinV += (baseSpin - spinV) * damp(dt, 0.9);
+      tree.rotation.y += spinV * dt;
+    }
 
     sparkAcc += Math.pow(energy, 1.4) * (reduceMotion ? 80 : 320) * dt;
     while (sparkAcc >= 1) { treeSpark(); sparkAcc -= 1; }
