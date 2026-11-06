@@ -213,6 +213,8 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
   box-shadow: 0 8px 26px rgba(242, 196, 106, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 .btn.primary:disabled { opacity: 0.7; cursor: progress; }
+a.btn { text-decoration: none; }
+.sheet-note a { color: inherit; word-break: break-all; -webkit-user-select: text; user-select: text; }
 .btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); font-weight: 500; }
 .sheet-note { margin: 0; font-size: 13px; line-height: 1.65; color: var(--ember); }
 .sheet-foot { margin: 0; font-size: 12px; line-height: 1.6; color: var(--ink-dim); }
@@ -296,6 +298,7 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
     </ul>
     <div class="sheet-actions">
       <button class="btn primary" id="startCam" type="button">开启后置摄像头</button>
+      <a class="btn primary" id="liveLink" href="https://wode85561479-wq.github.io/MusicVideo/christmas-tree/" target="_blank" rel="noopener" hidden>在 Safari 打开摄像头版</a>
       <button class="btn ghost" id="startDemo" type="button">先不用摄像头，直接看</button>
     </div>
     <p class="sheet-note" id="startNote" hidden></p>
@@ -337,7 +340,7 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
   } catch (e) { /* fonts are optional */ }
 
   const ui = {
-    sheet: $('startSheet'), startCam: $('startCam'), startDemo: $('startDemo'), note: $('startNote'), photoInput: $('photoInput'),
+    sheet: $('startSheet'), startCam: $('startCam'), startDemo: $('startDemo'), note: $('startNote'), photoInput: $('photoInput'), liveLink: $('liveLink'),
     lens: $('lens'), video: $('cam'), chargeBar: $('chargeBar'), swatch: $('swatch'), colorName: $('colorName'),
     motionBar: $('motionBar'), handCanvas: $('handCanvas'), gestureName: $('gestureName'), toast: $('toast'),
     modeLine: $('modeLine'), modeName: $('modeName'), modeEn: $('modeEn'), tintChip: $('tintChip'), tintDot: $('tintDot'), tintName: $('tintName'),
@@ -1341,8 +1344,21 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
     refreshControls();
     toast('摄像头已关闭');
   }
+  // Embedded previews (such as Claude's) never grant the camera, so point people to the stand-alone page instead.
+  const inPreview = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+  if (inPreview) {
+    const url = ui.liveLink.href;
+    ui.note.textContent = '你现在是在预览窗口里打开的，这里浏览器不允许使用摄像头，只能触屏玩。要用后置摄像头和手势，请点下面的按钮，在 Safari 里打开网页版：';
+    const a = document.createElement('a');
+    a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = url;
+    ui.note.appendChild(a);
+    ui.note.hidden = false;
+  }
   function refreshControls() {
-    if (camOn) { ui.startCam.textContent = '继续'; ui.startDemo.hidden = true; }
+    ui.liveLink.hidden = !inPreview;
+    ui.startCam.hidden = inPreview;
+    if (inPreview) { ui.startDemo.hidden = false; ui.startDemo.textContent = '在这里用触屏玩'; }
+    else if (camOn) { ui.startCam.textContent = '继续'; ui.startDemo.hidden = true; }
     else if (camBlocked) { ui.startCam.textContent = '拍一张照片取色'; ui.startDemo.hidden = false; ui.startDemo.textContent = '用触屏玩'; }
     else { ui.startCam.textContent = '开启后置摄像头'; ui.startDemo.hidden = false; ui.startDemo.textContent = '先不用摄像头，直接看'; }
     ui.camBtn.setAttribute('aria-pressed', camOn ? 'true' : 'false');
@@ -1410,7 +1426,8 @@ button:focus-visible, .btn:focus-within { outline: 2px solid var(--gold); outlin
   });
   ui.camBtn.addEventListener('click', () => {
     firstGesture();
-    if (camOn) stopCamera();
+    if (inPreview) openSheet();
+    else if (camOn) stopCamera();
     else if (camBlocked) ui.photoInput.click();
     else startCamera();
   });
