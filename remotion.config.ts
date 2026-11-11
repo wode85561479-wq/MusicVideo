@@ -5,7 +5,7 @@ Config.setVideoImageFormat('jpeg');
 Config.setJpegQuality(95);
 Config.setOverwriteOutput(true);
 Config.setCodec('h264');
-Config.setCrf(16);
+Config.setCrf(21);
 
 // Sandboxed/cloud machines often ship a headless shell already; use it when
 // present so Remotion does not try to download its own browser.

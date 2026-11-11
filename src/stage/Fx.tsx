@@ -1,5 +1,6 @@
 import React from 'react';
 import {random} from 'remotion';
+import {figureAt} from '../dance/choreo';
 import {clamp, ease, f} from '../rig/math';
 import {HEART, Palette, STAR} from './Background';
 
@@ -27,8 +28,8 @@ const BURSTS: Burst[] = [
   {at: 60, x: 0, y: -600, n: 14, r: 300, heart: true},
 ];
 
-/** Stage-space effects drawn over the character. */
-export const StageFx: React.FC<{beat: number; pal: Palette}> = ({beat, pal}) => {
+/** Star / heart bursts. Drawn behind the character so they never cover her face. */
+export const Bursts: React.FC<{beat: number; pal: Palette}> = ({beat, pal}) => {
   const items: React.ReactNode[] = [];
   BURSTS.forEach((b, bi) => {
     const u = (beat - b.at) / 1.4;
@@ -36,7 +37,7 @@ export const StageFx: React.FC<{beat: number; pal: Palette}> = ({beat, pal}) => 
     const e = ease.out(u);
     for (let i = 0; i < b.n; i++) {
       const ang = (i / b.n) * Math.PI * 2 + random(`ba${bi}-${i}`) * 0.7;
-      const dist = b.r * (0.45 + 0.55 * random(`bd${bi}-${i}`)) * e;
+      const dist = b.r * (0.3 + 0.7 * (0.45 + 0.55 * random(`bd${bi}-${i}`)) * e);
       const size = (10 + 20 * random(`bs${bi}-${i}`)) * (1 - u) * (u < 0.15 ? u / 0.15 : 1);
       const col = i % 3 === 0 ? pal.accent : i % 3 === 1 ? '#ffffff' : '#fff3a8';
       items.push(
@@ -52,6 +53,13 @@ export const StageFx: React.FC<{beat: number; pal: Palette}> = ({beat, pal}) => 
     }
   });
 
+  return <g>{items}</g>;
+};
+
+/** Stage-space effects drawn over the character. */
+export const StageFx: React.FC<{beat: number}> = ({beat}) => {
+  const items: React.ReactNode[] = [];
+
   // dust rings on landings
   for (const hit of [3.0, 29.55]) {
     const u = (beat - hit) / 0.9;
@@ -66,14 +74,36 @@ export const StageFx: React.FC<{beat: number; pal: Palette}> = ({beat, pal}) => 
   const grow = clamp((beat - 48.7) / 1.2);
   const fly = clamp((beat - 50) / 1.6);
   if (grow > 0 && fly < 1) {
-    const s = 34 * ease.snap(grow) * (1 + 0.1 * Math.sin(beat * Math.PI * 4)) + 150 * ease.out(fly);
-    const y = -474 - 150 * ease.out(fly);
+    const s = 34 * ease.snap(grow) * (1 + 0.1 * Math.sin(beat * Math.PI * 4)) + 70 * ease.out(fly);
+    const y = -474 - 420 * ease.out(fly);
     items.push(
       <g key="heart" transform={`translate(0 ${f(y)}) scale(${f(s)})`} opacity={f(1 - Math.pow(fly, 2))}>
         <path d={HEART} fill="#ff5f93" stroke="#ffffff" strokeWidth={0.14} strokeLinejoin="round" />
         <path d="M -0.55 -0.35 Q -0.5 -0.62 -0.25 -0.62" fill="none" stroke="#ffd0df" strokeWidth={0.12} strokeLinecap="round" />
       </g>,
     );
+  }
+  // swirl lines while she spins
+  const sk = figureAt(beat);
+  if (sk.spread > 0.03) {
+    [-170, -350, -540].forEach((y, i) => {
+      items.push(
+        <ellipse
+          key={`swirl${i}`}
+          cx={f(sk.pelvis[0])}
+          cy={y}
+          rx={150 + i * 34 + sk.spread * 60}
+          ry={26 + i * 4}
+          fill="none"
+          stroke="#ffffff"
+          strokeWidth={7 - i}
+          strokeLinecap="round"
+          strokeDasharray="240 520"
+          strokeDashoffset={f(-beat * 1100 + i * 260)}
+          opacity={f(sk.spread * 0.9)}
+        />,
+      );
+    });
   }
   return <g>{items}</g>;
 };

@@ -14,6 +14,9 @@ export const DIM = {
   ankle: 26,
 };
 
+/** Apparent width of a flat figure turned by `cosT`: stays readable, then flips to the back view. */
+export const turnScale = (cosT: number): number => (cosT < 0 ? -1 : 1) * Math.max(Math.pow(Math.abs(cosT), 0.6), 0.3);
+
 export interface Skeleton {
   pose: Pose;
   turn: number;
@@ -76,8 +79,8 @@ export const solve = (pose: Pose, turn = 0, spread = 0): Skeleton => {
 
   const armL = ik(shL, add(chest, [pose.hLx, -pose.hLy]), DIM.upper, DIM.fore, [pose.eLx, -pose.eLy], 0.92);
   const armR = ik(shR, add(chest, [pose.hRx, -pose.hRy]), DIM.upper, DIM.fore, [pose.eRx, -pose.eRy], 0.92);
-  const legL = ik(hipL, [pose.fLx, -(pose.fLy + DIM.ankle)], DIM.thigh, DIM.shin, [pose.knL, 0.15], 0.42);
-  const legR = ik(hipR, [pose.fRx, -(pose.fRy + DIM.ankle)], DIM.thigh, DIM.shin, [pose.knR, 0.15], 0.42);
+  const legL = ik(hipL, [pose.fLx, -(pose.fLy + DIM.ankle)], DIM.thigh, DIM.shin, [Math.sign(pose.knL) || 1, 0.15], 0.42 * Math.min(1, Math.abs(pose.knL)));
+  const legR = ik(hipR, [pose.fRx, -(pose.fRy + DIM.ankle)], DIM.thigh, DIM.shin, [Math.sign(pose.knR) || 1, 0.15], 0.42 * Math.min(1, Math.abs(pose.knR)));
 
   return {
     pose,

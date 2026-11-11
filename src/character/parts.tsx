@@ -78,7 +78,9 @@ export const Hand: React.FC<{wrist: V; dir: V; rotDeg: number; shape: HandShape;
         ) : null}
         {shape === 'point' ? (
           <>
-            <Finger x={17} y={-t * 4} ang={0} len={24} r={4.1} />
+            {/* index finger on the thumb side plus an open thumb: an unmistakable "pointing" L */}
+            <Finger x={9} y={t * 9} ang={t * 78} len={13} r={4.3} />
+            <Finger x={16} y={t * 6.5} ang={-t * 4} len={25} r={4.1} />
             <ellipse cx={10} cy={0} rx={13} ry={12} fill={C.skin} />
           </>
         ) : null}

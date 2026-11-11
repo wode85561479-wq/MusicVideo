@@ -3,8 +3,9 @@ import {AbsoluteFill, Audio, staticFile, useCurrentFrame} from 'remotion';
 import {Miku, MikuDefs} from './character/Miku';
 import {beatOf, figureAt, shotAt, TOTAL_BEATS} from './dance/choreo';
 import {clamp, ease, f} from './rig/math';
+import {turnScale} from './rig/solve';
 import {Backdrop, Floor, PALETTES} from './stage/Background';
-import {FocusLines, StageFx} from './stage/Fx';
+import {Bursts, FocusLines, StageFx} from './stage/Fx';
 
 const Title: React.FC<{beat: number}> = ({beat}) => {
   const inn = ease.out(clamp((beat - 4.0) / 0.5));
@@ -20,6 +21,25 @@ const Title: React.FC<{beat: number}> = ({beat}) => {
       </text>
       <text x={18} y={30} fontFamily="Inter, sans-serif" fontWeight={700} fontSize={26} fill="#22a7a6" letterSpacing={5}>
         FAN ANIMATION · 128 BPM
+      </text>
+    </g>
+  );
+};
+
+const Opening: React.FC<{beat: number}> = ({beat}) => {
+  const inn = ease.snap(clamp((beat - 0.5) / 0.5));
+  const out = clamp((beat - 2.5) / 0.4);
+  if (inn <= 0 || out >= 1) return null;
+  return (
+    <g transform={`translate(960 ${f(500 - out * 60)}) rotate(-4) scale(${f(0.6 + 0.4 * inn)})`} opacity={f(Math.min(inn, 1) * (1 - out))}>
+      <text textAnchor="middle" y={0} fontFamily="Inter, sans-serif" fontWeight={900} fontStyle="italic" fontSize={150} fill="#ffffff" stroke="#ffffff" strokeWidth={34} strokeLinejoin="round" letterSpacing={-4}>
+        MIKU x CHIKA DANCE
+      </text>
+      <text textAnchor="middle" y={0} fontFamily="Inter, sans-serif" fontWeight={900} fontStyle="italic" fontSize={150} fill="#1d3344" letterSpacing={-4}>
+        <tspan fill="#22b3ac">MIKU</tspan> <tspan fill="#ec4d86">x</tspan> CHIKA DANCE
+      </text>
+      <text textAnchor="middle" y={78} fontFamily="Inter, sans-serif" fontWeight={800} fontSize={38} fill="#ec4d86" letterSpacing={14}>
+        FAN ANIMATION
       </text>
     </g>
   );
@@ -73,12 +93,14 @@ export const Scene: React.FC = () => {
           <g mask="url(#reflMask)">
             <use href="#mikuFig" transform="scale(1 -1)" />
           </g>
-          <ellipse cx={f(sk.pelvis[0] * sk.cosT)} cy={6} rx={f(150 * shadowK)} ry={f(20 * shadowK)} fill={pal.shadow} opacity={f(0.34 * shadowK)} />
+          <ellipse cx={f(sk.pelvis[0] * turnScale(sk.cosT))} cy={6} rx={f(150 * shadowK)} ry={f(20 * shadowK)} fill={pal.shadow} opacity={f(0.34 * shadowK)} />
+          <Bursts beat={beat} pal={pal} />
           <use href="#mikuFig" />
-          <StageFx beat={beat} pal={pal} />
+          <StageFx beat={beat} />
         </g>
         <FocusLines beat={beat} frame={frame} />
         <rect width={1920} height={1080} fill="url(#vignette)" />
+        <Opening beat={beat} />
         <Title beat={beat} />
         {white > 0 ? <rect width={1920} height={1080} fill="#ffffff" opacity={f(white)} /> : null}
       </svg>

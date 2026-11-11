@@ -1,7 +1,7 @@
 import React from 'react';
 import {figureAt} from '../dance/choreo';
 import {add, angleOf, clamp, f, mul, norm, perp, pt, smoothThrough, sub, V} from '../rig/math';
-import {Skeleton} from '../rig/solve';
+import {Skeleton, turnScale} from '../rig/solve';
 import {Head} from './Head';
 import {C} from './palette';
 import {along, Hand, Ink, quadPts, ribbonPath, Seg, Strip} from './parts';
@@ -19,10 +19,7 @@ const Tail: React.FC<{beat: number; side: -1 | 1}> = ({beat, side}) => {
     const u = i / (TAIL_N - 1);
     const shape = 12 + 58 * Math.sin(u * 2.5);
     const sway = Math.sin(beat * Math.PI * 0.5 + i * 0.55 + side) * u * 7;
-    spine.push([
-      a[0] * s.cosT + side * s.cosT * shape * (1 + 2.1 * s.spread * u) + sway,
-      a[1] + i * TAIL_SEG * (1 - 0.5 * s.spread * u),
-    ]);
+    spine.push([a[0] + side * shape * (1 + 1.7 * s.spread * u) + sway, a[1] + i * TAIL_SEG * (1 - 0.5 * s.spread * u)]);
   }
   const rb = ribbonPath(spine, TAIL_HALF);
   const inner = (k: number, from: number, to: number): V[] =>
@@ -230,7 +227,7 @@ export const Miku: React.FC<{beat: number}> = ({beat}) => {
   const lag = figureAt(beat - 0.2);
   const p = sk.pose;
   const back = sk.cosT < 0;
-  const sx = (sk.cosT < 0 ? -1 : 1) * Math.max(Math.abs(sk.cosT), 0.08);
+  const sx = turnScale(sk.cosT);
   const shear = clamp((lag.pelvis[0] - sk.pelvis[0]) * 0.5, -18, 18);
   const flare = clamp((sk.pelvis[1] - lag.pelvis[1]) * 0.35, -8, 22) + sk.spread * 26;
   const tieSway = clamp((sk.chest[0] - lag.chest[0]) * 0.6, -24, 24);
@@ -245,8 +242,8 @@ export const Miku: React.FC<{beat: number}> = ({beat}) => {
 
   return (
     <g transform={`scale(${f(1 / Math.sqrt(p.squash))} ${f(p.squash)})`}>
-      {back ? null : tails}
       <g transform={`scale(${f(sx)} 1)`}>
+        {back ? null : tails}
         <Leg hip={sk.hipL} knee={sk.knL} ankle={sk.anL} side={-1} lift={p.fLy} />
         <Leg hip={sk.hipR} knee={sk.knR} ankle={sk.anR} side={1} lift={p.fRy} />
         <g transform={`translate(${pt(sk.pelvis)}) rotate(${f(sk.pelvisAng)})`}>
@@ -264,8 +261,8 @@ export const Miku: React.FC<{beat: number}> = ({beat}) => {
         </g>
         <Arm sh={sk.shL} el={sk.elL} ha={sk.haL} side={-1} shape={p.hsL} handRot={p.handLRot} />
         <Arm sh={sk.shR} el={sk.elR} ha={sk.haR} side={1} shape={p.hsR} handRot={p.handRRot} mark />
+        {back ? tails : null}
       </g>
-      {back ? tails : null}
     </g>
   );
 };

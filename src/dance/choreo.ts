@@ -126,10 +126,12 @@ for (let i = 0; i < 4; i++) {
 for (let i = 0; i < 4; i++) {
   const s = i % 2 === 0 ? -1 : 1;
   const left: PP = {
-    hLx: -150,
-    hLy: -80,
-    hRx: -20,
-    hRy: -120,
+    hLx: -158,
+    hLy: 6,
+    hRx: -52,
+    hRy: -24,
+    hsR: 'fist',
+    hsL: 'fist',
     hipX: 24,
     hipTilt: 9,
     lean: -6,
@@ -154,10 +156,10 @@ for (let j = 0; j < 8; j++) {
   k(
     16 + j / 2,
     {
-      hLx: -84,
-      hLy: 84,
-      hRx: 84,
-      hRy: 84,
+      hLx: -98,
+      hLy: 70,
+      hRx: 98,
+      hRy: 70,
       handLRot: flick ? -28 : 14,
       handRRot: flick ? 28 : -14,
       hipX: st.hipX,
@@ -180,7 +182,7 @@ const DISCO_UP: PP = {
   ...HIP_L,
   hRx: 150,
   hRy: 122,
-  hsR: 'point',
+  hsR: 'open',
   hipX: -18,
   hipTilt: -8,
   lean: 5,
@@ -194,7 +196,7 @@ const DISCO_DOWN: PP = {
   ...HIP_L,
   hRx: -72,
   hRy: -118,
-  hsR: 'point',
+  hsR: 'open',
   hipX: 14,
   hipTilt: 6,
   lean: -6,
@@ -229,6 +231,8 @@ for (let q = 0; q <= 16; q++) {
       lookY: -0.3 * crouch,
       fLx: -48,
       fRx: 48,
+      knL: 0.4,
+      knR: -0.4,
       mouth: 0.7,
       bounce: 5,
     },
@@ -260,20 +264,20 @@ k(
 );
 k(29.55, {hipY: 288, fLx: -46, fRx: 46, hLx: -122, hLy: -40, hRx: 122, hRy: -40, squash: 0.94, mouth: 0.7, bounce: 0}, 0.5, 'in');
 const CLAP: PP = {
-  hLx: -88,
-  hLy: 118,
-  hRx: -62,
-  hRy: 114,
-  lean: -8,
-  hipX: 16,
-  hipTilt: 6,
-  headTilt: -8,
-  lookX: -0.5,
-  lookY: 0.3,
+  hLx: -128,
+  hLy: 52,
+  hRx: -104,
+  hRy: 48,
+  lean: -7,
+  hipX: 18,
+  hipTilt: 7,
+  headTilt: 9,
+  lookX: -0.6,
+  lookY: 0,
   mouth: 1,
   bounce: 12,
 };
-const APART: PP = {...CLAP, hLx: -114, hLy: 100, hRx: -30, hRy: 98, mouth: 0.6};
+const APART: PP = {...CLAP, hLx: -150, hLy: 40, hRx: -62, hRy: 30, mouth: 0.6};
 k(30, CLAP, 0.4);
 k(30.5, APART, 0.25, 'inOut');
 k(31, mir(CLAP), 0.4);
@@ -304,7 +308,7 @@ k(36.0, {hipY: 320, hLx: 6, hLy: -70, hRx: 92, hRy: -52, lean: -6, lookX: -0.5, 
 k(36.8, {hipY: 350, hLx: -150, hLy: -30, hRx: 150, hRy: -30, fLx: -14, fRx: 14, mouth: 0.9, happy: 1, bounce: 0}, 0.6, 'inOut');
 const PEACE: PP = {
   ...HIP_L,
-  hRx: 80,
+  hRx: 90,
   hRy: 84,
   hsR: 'peace',
   handRRot: 24,
@@ -328,10 +332,10 @@ k(38, PEACE, 0.45);
 for (let i = 0; i < 4; i++) {
   const s = i % 2 === 0 ? -1 : 1;
   k(40 + i, {
-    hLx: -92 + s * 40,
-    hLy: 160,
-    hRx: 92 + s * 40,
-    hRy: 160,
+    hLx: -112 + s * 38,
+    hLy: 152,
+    hRx: 112 + s * 38,
+    hRy: 152,
     handLRot: s * 16,
     handRRot: s * 16,
     lean: s * 7,
@@ -347,10 +351,10 @@ for (let i = 0; i < 4; i++) {
 for (let i = 0; i < 4; i++) {
   const s = i % 2 === 0 ? -1 : 1;
   k(44 + i, {
-    hLx: -64,
-    hLy: s < 0 ? 78 : 56,
-    hRx: 64,
-    hRy: s > 0 ? 78 : 56,
+    hLx: -80,
+    hLy: s < 0 ? 72 : 50,
+    hRx: 80,
+    hRy: s > 0 ? 72 : 50,
     hsL: 'paw',
     hsR: 'paw',
     handLRot: s < 0 ? -30 : 10,
@@ -368,20 +372,20 @@ for (let i = 0; i < 4; i++) {
 }
 
 // ───────────────────────── G · heart, double spin, final (48-64) ─────────────────────────
-k(48.5, {hLx: -15, hLy: -22, hRx: 15, hRy: -22, hsL: 'fist', hsR: 'fist', hipY: 318, headTilt: 7, lookY: -0.35, happy: 1, mouth: 0.3, blush: 1, bounce: 8}, 0.6, 'inOut');
+k(48.5, {hLx: -15, hLy: -22, hRx: 15, hRy: -22, hsL: 'fist', hsR: 'fist', hipY: 318, knL: 0.5, knR: -0.5, headTilt: 7, lookY: -0.35, happy: 1, mouth: 0.3, blush: 1, bounce: 8}, 0.6, 'inOut');
 k(50, {hLx: -128, hLy: 30, hRx: 128, hRy: 30, hipY: 342, lookY: 0.2, mouth: 1, headTilt: -5, bounce: 12}, 0.4);
 const SWAY: PP = {hLx: -136, hLy: 62, hRx: 112, hRy: 8, lean: -6, hipX: 12, headTilt: -8, mouth: 0.8, bounce: 12};
 k(51, SWAY);
 k(52, mir(SWAY));
-k(52.8, {hipY: 276, hLx: -38, hLy: -60, hRx: 38, hRy: -60, hsL: 'fist', hsR: 'fist', lean: -7, lookX: -0.5, lookY: -0.3, mouth: 0.3, squash: 0.96, bounce: 0}, 0.5, 'inOut');
+k(52.8, {hipY: 276, hLx: -38, hLy: -60, hRx: 38, hRy: -60, hsL: 'fist', hsR: 'fist', knL: 0.5, knR: -0.5, lean: -7, lookX: -0.5, lookY: -0.3, mouth: 0.3, squash: 0.96, bounce: 0}, 0.5, 'inOut');
 k(54, {hipY: 350, hLx: -150, hLy: -20, hRx: 150, hRy: -20, fLx: -12, fRx: 12, mouth: 0.9, bounce: 0}, 1.0, 'inOut');
 k(55.2, {hipY: 346, hLx: -96, hLy: 96, hRx: 96, hRy: 96, fLx: -16, fRx: 16, mouth: 1, happy: 1, bounce: 0}, 0.8, 'inOut');
-k(55.72, {hipY: 300, hLx: -30, hLy: -30, hRx: 30, hRy: -30, hsL: 'fist', hsR: 'fist', lookY: -0.3, squash: 0.95, bounce: 0}, 0.4, 'inOut');
+k(55.72, {hipY: 300, hLx: -30, hLy: -30, hRx: 30, hRy: -30, hsL: 'fist', hsR: 'fist', knL: 0.5, knR: -0.5, lookY: -0.3, squash: 0.95, bounce: 0}, 0.4, 'inOut');
 const FINAL: PP = {
   ...HIP_L,
   hRx: 104,
   hRy: 168,
-  hsR: 'point',
+  hsR: 'peace',
   hipX: -14,
   hipTilt: 9,
   lean: -4,
