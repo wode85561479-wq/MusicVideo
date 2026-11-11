@@ -1,0 +1,24 @@
+{
+  "name": "miku-chika-dance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hatsune Miku fan animation dancing a Chika-dance-inspired routine, built with Remotion",
+  "scripts": {
+    "studio": "remotion studio",
+    "music": "node scripts/make-music.mjs",
+    "render": "remotion render MikuDance out/miku-chika-dance.mp4",
+    "still": "remotion still MikuDance",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.542",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.542"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}
