@@ -1,0 +1,889 @@
+<title>初音未来 书记舞</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Noto+Sans+SC:wght@400;600&display=swap">
+<style>
+/* Layout: one 16:9 stage card, a transport strip under it, and the choreography as clickable section chips. */
+:root{
+  --bg:#F1F6F7; --fg:#1C2A2E; --muted:#5B7378; --panel:#FFFFFF; --line:#D3E1E3;
+  --accent:#149E95; --accent-ink:#0B5F5B; --pink:#E25D96; --chip:#E3F2F1; --chip-on:#149E95; --chip-on-fg:#FFFFFF;
+  --display:"M PLUS Rounded 1c","Noto Sans SC","WenQuanYi Zen Hei",system-ui,sans-serif;
+  --body:"Noto Sans SC","M PLUS Rounded 1c","WenQuanYi Zen Hei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#0E1618; --fg:#E4EFF0; --muted:#90A6AA; --panel:#15201F; --line:#25373A; --accent:#3BD0C5; --accent-ink:#A6EFE9; --pink:#F27BB0; --chip:#1C2F32; --chip-on:#3BD0C5; --chip-on-fg:#0E1618; color-scheme:dark }
+}
+:root[data-theme="dark"]{ --bg:#0E1618; --fg:#E4EFF0; --muted:#90A6AA; --panel:#15201F; --line:#25373A; --accent:#3BD0C5; --accent-ink:#A6EFE9; --pink:#F27BB0; --chip:#1C2F32; --chip-on:#3BD0C5; --chip-on-fg:#0E1618; color-scheme:dark }
+*{box-sizing:border-box}
+body{ background:var(--bg); color:var(--fg); font-family:var(--body); margin:0; line-height:1.5 }
+.wrap{ max-width:1120px; margin:0 auto; display:grid; gap:14px; padding-block:18px 44px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+header{ display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 18px }
+.eyebrow{ font-family:var(--display); font-weight:800; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink) }
+h1{ font-family:var(--display); font-weight:800; font-size:clamp(22px,3.4vw,32px); margin:0; text-wrap:balance; line-height:1.2 }
+.sub{ color:var(--muted); font-size:14px; margin:0; flex-basis:100% }
+.stage{ position:relative; width:100%; max-width:100%; aspect-ratio:16/9; border-radius:18px; overflow:hidden; background:#FBE7EE; box-shadow:0 14px 40px rgba(20,60,60,.14) }
+.stage canvas{ display:block; width:100%; height:100% }
+.bigplay{ position:absolute; inset:0; margin:auto; width:124px; height:124px; border-radius:50%; border:0; cursor:pointer;
+  background:rgba(255,255,255,.92); color:#0B5F5B; font-family:var(--display); font-weight:800; font-size:18px;
+  box-shadow:0 10px 30px rgba(20,60,60,.25); display:grid; place-items:center; gap:2px; transition:transform .15s }
+.bigplay:hover{ transform:scale(1.04) } .bigplay:focus-visible{ outline:3px solid var(--pink); outline-offset:3px }
+.bigplay svg{ width:34px; height:34px; fill:currentColor }
+.bigplay[hidden]{ display:none }
+.transport{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px 14px }
+.btn{ border:1px solid var(--line); background:var(--chip); color:var(--fg); border-radius:999px; padding:7px 14px; font:600 14px var(--display); cursor:pointer; min-width:84px }
+.btn.primary{ background:var(--accent); color:#fff; border-color:transparent }
+.btn:focus-visible{ outline:3px solid var(--pink); outline-offset:2px }
+.time{ font-variant-numeric:tabular-nums; font-family:var(--display); font-weight:800; font-size:15px; min-width:110px; color:var(--accent-ink) }
+.scrub{ flex:1 1 200px; min-width:0; accent-color:var(--accent); height:28px; margin:0 }
+.chips{ display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin }
+.chip{ flex:0 0 auto; border:0; background:var(--chip); color:var(--fg); border-radius:999px; padding:6px 12px; font:500 13px var(--body); cursor:pointer; white-space:nowrap }
+.chip b{ font-family:var(--display); font-weight:800; margin-right:4px; color:var(--accent-ink) }
+.chip[aria-current="true"]{ background:var(--chip-on); color:var(--chip-on-fg) } .chip[aria-current="true"] b{ color:inherit }
+.chip:focus-visible{ outline:3px solid var(--pink); outline-offset:2px }
+.note{ color:var(--muted); font-size:13px; margin:0; max-width:68ch }
+@media (prefers-reduced-motion: reduce){ .bigplay{ transition:none } }
+</style>
+
+<main class="wrap">
+  <header>
+    <span class="eyebrow">Miku × Chika dance · 60 s</span>
+    <h1>初音未来 跳书记舞</h1>
+    <p class="sub">程序化 2D 动画 · 128 BPM × 32 小节 · 配乐为原创合成，不是原曲</p>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="stage-canvas" aria-label="初音未来书记舞动画"></canvas>
+    <button class="bigplay" id="bigplay" type="button" aria-label="播放">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      <span id="bigplay-label">播放</span>
+    </button>
+  </div>
+
+  <div class="transport">
+    <button class="btn primary" id="play" type="button">播放</button>
+    <span class="time" id="time">0:00.0 / 1:00.0</span>
+    <input class="scrub" id="scrub" type="range" min="0" max="60" step="0.05" value="0" aria-label="进度">
+    <button class="btn" id="mute" type="button">静音</button>
+  </div>
+
+  <div class="chips" id="chips" role="list" aria-label="舞蹈段落"></div>
+  <p class="note">舞步是对《辉夜大小姐想让我告白》片尾“书记舞”招牌动作的再编排：指尖闪烁、叉腰扭胯、绕拳甩臂、举手摆荡、转身回眸、托腮卖萌、侧步拍手，最后定格。角色为初音未来风格的同人绘制，全部由代码逐帧绘出。</p>
+</main>
+
+<script>
+(() => {
+'use strict';
+// ===================== constants & helpers =====================
+const W = 1280, H = 720;
+const BPM = 128, BEAT = 60 / BPM, TOTAL_BEATS = 128, DURATION = TOTAL_BEATS * BEAT; // 60 s
+const PI = Math.PI, TAU = PI * 2;
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, s) => a + (b - a) * s;
+const fract = v => v - Math.floor(v);
+const smooth = s => { s = clamp(s, 0, 1); return s * s * (3 - 2 * s); };
+const hop = (u, h) => (u < 0 || u > 1) ? 0 : h * 4 * u * (1 - u);
+const hash = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const lerpAngle = (a, b, s) => { let d = (b - a) % TAU; if (d > PI) d -= TAU; if (d < -PI) d += TAU; return a + d * s; };
+const asin = Math.abs;
+
+// ===================== rig dimensions =====================
+const HEAD_R = 64, NECK = 10, TORSO = 92, SHW = 66, HIPW = 40, UARM = 56, FARM = 54;
+const THIGH = 66, SHIN = 64, STANCE = 22, TAILL = 300;
+const LEG_STAND = THIGH + SHIN - 2;
+const GROUND = 606;
+const BLEND = 0.75; // beats of cross-fade between sections
+
+const C = {
+  line: '#2A2E3A', skin: '#FFE8D8', skinShade: '#F2C8B4',
+  hair: '#3FC9BF', hairDark: '#27A89F', hairLight: '#96EDE6', hairLine: '#1B7F78',
+  top: '#C3CBD0', topShade: '#9AA4AA', tie: '#39C5BB', collar: '#2E3340',
+  skirt: '#2F3340', trim: '#39C5BB', sleeve: '#33363F', boot: '#33363F',
+  eye: '#2DBAB0', eyeDark: '#12706A', mouth: '#C8445F', tongue: '#F48FA6',
+  dark: '#2E3138', pinkAcc: '#E9538F', blush: '255,118,140'
+};
+
+// ===================== choreography =====================
+const SECTIONS = [
+  { id: 'intro',   cn: '登场',     en: 'Intro',       start: 0,   len: 8 },
+  { id: 'point',   cn: '指尖闪烁', en: 'Chika point', start: 8,   len: 16 },
+  { id: 'hips',    cn: '叉腰扭胯', en: 'Hip shake',   start: 24,  len: 16 },
+  { id: 'roll',    cn: '绕拳甩臂', en: 'Fist roll',   start: 40,  len: 16 },
+  { id: 'wave',    cn: '举手摆荡', en: 'Pendulum',    start: 56,  len: 16 },
+  { id: 'spin',    cn: '转身回眸', en: 'Spin',        start: 72,  len: 8 },
+  { id: 'cheek',   cn: '托腮卖萌', en: 'Cheeks',      start: 80,  len: 16 },
+  { id: 'step',    cn: '侧步拍手', en: 'Side step',   start: 96,  len: 16 },
+  { id: 'reprise', cn: '再来一次', en: 'Reprise',     start: 112, len: 12 },
+  { id: 'final',   cn: '定格',     en: 'Final pose',  start: 124, len: 4 },
+];
+
+// Arm specs. Coordinates are "outward": +x points away from the body's centre line,
+// relative to the shoulder, in the torso's own frame. T = IK target, A = explicit angles.
+const T = (x, y, hand = 'fist', finger = null, elbow = 1) => ({ target: { x, y }, hand, finger, elbow });
+const A = (up, lo, hand = 'fist', finger = null) => ({ up, lo, hand, finger });
+// TB = target given in body screen-space (sx = screen x of the hand relative to the body centre).
+const TB = (sx, y, side, hand = 'fist', finger = null, elbow = 1) => T(side * sx - SHW / 2, y - 4, hand, finger, elbow);
+
+function baseSpec() {
+  return {
+    cx: 0, dip: 10, jump: 0, travel: 0, lean: 0, yaw: 0, hipTilt: 0, headTilt: 0, headYaw: 0, headNod: 0,
+    feet: { l: { x: 0, y: 0 }, r: { x: 0, y: 0 } },
+    arms: { l: A(0.18, 0.3), r: A(0.18, 0.3) }, armZ: 'front',
+    expr: 'smile', blush: 0.5, look: 0,
+  };
+}
+const beatDip = (b, base, amp) => base - amp * asin(Math.sin(PI * b)); // lowest on the beat
+
+const MOVES = {
+  intro(b) {
+    const p = baseSpec();
+    p.dip = beatDip(b, 14, 6);
+    p.cx = 5 * Math.sin(PI * b / 2);
+    p.lean = -0.05 * Math.sin(PI * b / 2);
+    p.headTilt = 0.06 * Math.sin(PI * b / 2);
+    p.headNod = 2 * Math.sin(TAU * b);
+    p.arms.l = T(-27, 50); p.arms.r = T(-27, 50);
+    if (b >= 6) { p.expr = 'wink'; p.headTilt = 0.16; p.arms.r = T(13, -38, 'point', 2.9); p.look = -0.4; }
+    return p;
+  },
+  point(b) {
+    const p = baseSpec();
+    const S = Math.cos(PI * b), w = Math.sin(PI * b);
+    p.cx = 16 * S; p.lean = -0.13 * S; p.headTilt = 0.12 * S; p.look = S * 0.6;
+    p.dip = beatDip(b, 16, 10);
+    p.feet.l.x = 6; p.feet.r.x = 6;
+    p.arms.l = T(19, -42 + 14 * w, 'point', 2.85);
+    p.arms.r = T(19, -42 - 14 * w, 'point', 2.85);
+    p.expr = (Math.floor(b / 4) % 2 === 0) ? 'open' : 'smile';
+    return p;
+  },
+  hips(b) {
+    const p = baseSpec();
+    const S = Math.cos(PI * b);
+    p.cx = 22 * S; p.lean = -0.2 * S; p.hipTilt = 0.1 * S; p.headTilt = 0.07 * S; p.yaw = -0.18 * S; p.look = -S * 0.4;
+    p.dip = beatDip(b, 18, 8);
+    p.feet.l.x = 14; p.feet.r.x = 14;
+    p.arms.l = T(-4, 86); p.arms.r = T(-4, 86);
+    if (b >= 12) p.lean += 0.07 * Math.sin(4 * PI * b);
+    p.expr = 'grin';
+    return p;
+  },
+  roll(b) {
+    const p = baseSpec();
+    const bar = Math.floor(b / 4), q = b - bar * 4;
+    p.dip = beatDip(b, 14, 8); p.cx = 6 * Math.sin(PI * b);
+    if (q < 3) {
+      const th = TAU * b;
+      p.arms.l = T(18 * Math.cos(th) - 33, 42 + 18 * Math.sin(th));
+      p.arms.r = T(-18 * Math.cos(th) - 33, 42 - 18 * Math.sin(th));
+      p.headNod = 2 * Math.sin(TAU * b); p.expr = 'smile';
+    } else {
+      const v = q - 3;
+      if (bar % 2 === 0) { p.arms.l = T(70, -70, 'open'); p.arms.r = T(70, -70, 'open'); }
+      else {
+        const d = bar === 1 ? 1 : -1;
+        const far = T(57, -49, 'open'), cross = T(-78, -79, 'open');
+        if (d > 0) { p.arms.l = far; p.arms.r = cross; } else { p.arms.l = cross; p.arms.r = far; }
+        p.lean = 0.12 * d; p.headTilt = 0.1 * d; p.cx = 10 * d; p.look = 0.5 * d;
+      }
+      p.jump = hop(v, 24); p.feet.l.y = p.jump * 0.25; p.feet.r.y = p.jump * 0.25;
+      p.expr = 'open'; p.dip = 8;
+    }
+    return p;
+  },
+  wave(b) {
+    const p = baseSpec();
+    p.feet.l.x = 10; p.feet.r.x = 10;
+    if (b < 12) {
+      const sg = Math.sin(PI * b), sig = 0.42 * sg, V = PI - 0.55;
+      p.arms.l = A(V - sig, V - sig - 0.15, 'open');
+      p.arms.r = A(V + sig, V + sig - 0.15, 'open');
+      p.cx = -16 * sg; p.lean = 0.16 * sg; p.headTilt = 0.22 * sg; p.look = sg * 0.5;
+      p.dip = beatDip(b, 12, 6); p.expr = 'open';
+    } else {
+      const v = (b - 12) / 4, ang = TAU * v;
+      p.arms.l = A(PI - ang, PI - ang - 0.2, 'open');
+      p.arms.r = A(PI - ang, PI - ang - 0.2, 'open');
+      p.dip = beatDip(b, 16, 10); p.expr = 'grin'; p.cx = 10 * Math.sin(TAU * v); p.headTilt = -0.1 * Math.sin(TAU * v);
+    }
+    return p;
+  },
+  spin(b) {
+    const p = baseSpec();
+    p.feet.l.x = 4; p.feet.r.x = 4;
+    if (b < 2) {
+      p.yaw = PI * smooth(b / 2);
+      p.arms.l = A(0.7, 0.9, 'open'); p.arms.r = A(0.7, 0.9, 'open');
+      p.dip = 12; p.expr = 'open'; p.headYaw = 0.3 * Math.sin(PI * b / 2);
+    } else if (b < 6) {
+      const S = Math.cos(PI * b);
+      p.yaw = PI; p.cx = 20 * S; p.lean = -0.18 * S; p.hipTilt = 0.1 * S;
+      p.dip = beatDip(b, 18, 8);
+      p.arms.l = T(-19, 72); p.arms.r = T(-19, 72); p.armZ = 'back';
+      const pk = smooth((b - 4) / 0.6);
+      p.headYaw = -1.85 * pk; p.headTilt = 0.18 * pk; p.expr = 'wink'; p.look = -0.6;
+    } else {
+      const v = (b - 6) / 2;
+      p.yaw = PI + PI * smooth(v); p.jump = hop(v, 18);
+      p.arms.l = A(2.2, 2.4, 'open'); p.arms.r = A(2.2, 2.4, 'open');
+      p.expr = 'open'; p.dip = 10;
+    }
+    return p;
+  },
+  cheek(b) {
+    const p = baseSpec();
+    const S = Math.sin(PI * b / 2);
+    p.dip = beatDip(b, 16, 10); p.cx = 10 * S; p.lean = -0.06 * S; p.headTilt = 0.3 * S; p.look = S * 0.5;
+    p.feet.l.x = 10; p.feet.r.x = 10; p.blush = 1;
+    if (b < 8 || b >= 12) {
+      p.arms.l = T(-7, -24); p.arms.r = T(-7, -24);
+      p.expr = (Math.floor(b / 2) % 2) ? 'oo' : 'open';
+      if (b >= 14) p.expr = 'wink';
+    } else {
+      const w = Math.sin(4 * PI * b);
+      p.arms.l = T(25, -30 + 6 * w, 'open'); p.arms.r = T(25, -30 - 6 * w, 'open'); p.expr = 'grin';
+    }
+    return p;
+  },
+  step(b) {
+    const p = baseSpec();
+    const bar = Math.floor(b / 4), q = b - bar * 4;
+    let tr; if (q < 1) tr = 40 * smooth(q); else if (q < 2) tr = 40; else if (q < 3) tr = 40 * (1 - smooth(q - 2)); else tr = 0;
+    p.travel = tr;
+    const lift = ph => (ph >= 0 && ph < 1) ? 11 * Math.sin(PI * ph) : 0;
+    if (q < 1) { p.feet.l.y = lift(q * 2); p.feet.r.y = lift(q * 2 - 1); }
+    else if (q >= 2 && q < 3) { p.feet.r.y = lift((q - 2) * 2); p.feet.l.y = lift((q - 2) * 2 - 1); }
+    p.dip = beatDip(b, 14, 6); p.feet.l.x += 4; p.feet.r.x += 4;
+    if (q < 1) { p.arms.l = TB(60, 30, 1, 'open'); p.arms.r = TB(30, 50, -1, 'open'); p.lean = 0.1; p.look = 0.5; }
+    else if (q < 2) {
+      const v = smooth((q - 1) / 0.4);
+      p.arms.l = TB(lerp(60, 7, v), lerp(30, 40, v), 1, 'open');
+      p.arms.r = TB(lerp(30, -7, v), lerp(50, 40, v), -1, 'open');
+      p.lean = 0.05 * (1 - v); p.expr = 'open';
+    } else if (q < 3) { p.arms.l = TB(-30, 50, 1, 'open'); p.arms.r = TB(-60, 30, -1, 'open'); p.lean = -0.1; p.look = -0.5; }
+    else {
+      const v = smooth((q - 3) / 0.4);
+      const ul = ik2(-30 - SHW / 2, 46, UARM, FARM, 1), ur = ik2(60 - SHW / 2, 26, UARM, FARM, 1);
+      p.arms.l = A(lerp(ul[0], PI - 0.7, v), lerp(ul[1], PI - 0.95, v), 'open');
+      p.arms.r = A(lerp(ur[0], PI - 0.7, v), lerp(ur[1], PI - 0.95, v), 'open'); p.expr = 'grin';
+      p.lean = -0.05 * (1 - v);
+    }
+    if (bar === 3 && q >= 2) {
+      p.arms.l = TB(84, -40, 1, 'point'); p.arms.r = TB(40, -62, -1, 'point');
+      p.expr = 'wink'; p.lean = 0.15; p.headTilt = 0.15; p.cx = 12; p.look = 0.6; p.feet.l.y = 0; p.feet.r.y = 0; p.travel = 0;
+    }
+    return p;
+  },
+  reprise(b) {
+    const p = baseSpec();
+    const S = Math.cos(PI * b), w = Math.sin(PI * b);
+    p.cx = 18 * S; p.lean = -0.14 * S; p.headTilt = 0.14 * S; p.look = S * 0.6;
+    p.dip = beatDip(b, 16, 10); p.feet.l.x = 8; p.feet.r.x = 8;
+    if (b < 8) {
+      const u = b - Math.floor(b / 4) * 4;
+      p.jump = hop(u / 0.8, 22); p.feet.l.y = p.jump * 0.3; p.feet.r.y = p.jump * 0.3;
+      p.arms.l = T(36, -92 + 16 * w, 'point', 2.7); p.arms.r = T(36, -92 - 16 * w, 'point', 2.7);
+      p.expr = (Math.floor(b / 2) % 2) ? 'open' : 'grin';
+    } else {
+      const v = (b - 8) / 4, ang = TAU * v;
+      p.arms.l = A(PI - ang, PI - ang - 0.2, 'open'); p.arms.r = A(PI - ang, PI - ang - 0.2, 'open');
+      p.expr = 'open'; p.cx = 14 * Math.sin(TAU * v); p.headTilt = -0.12 * Math.sin(TAU * v);
+    }
+    return p;
+  },
+  final(b) {
+    const p = baseSpec();
+    const u = clamp(b, 0, 1.5), snap = 1 - Math.exp(-5 * u) * Math.cos(9 * u);
+    p.cx = -18 * snap; p.lean = 0.14 * snap; p.headTilt = -0.22 * snap; p.hipTilt = -0.1 * snap; p.yaw = -0.12 * snap;
+    p.dip = 13 + 2 * Math.sin(TAU * b / 2);
+    p.feet.l.x = 16; p.feet.r.x = 6;
+    p.arms.l = T(-4, 86); p.arms.r = T(7, -34, 'peace', 2.6);
+    p.expr = 'wink'; p.blush = 0.8; p.look = 0.1;
+    return p;
+  },
+};
+
+// ===================== IK & solving =====================
+function ik2(tx, ty, L1, L2, e) {
+  let d = Math.hypot(tx, ty);
+  const maxd = L1 + L2 - 0.5, mind = Math.abs(L1 - L2) + 0.5;
+  if (d > maxd) { tx *= maxd / d; ty *= maxd / d; d = maxd; }
+  if (d < mind) { if (d < 1e-6) { tx = 0; ty = mind; } else { tx *= mind / d; ty *= mind / d; } d = mind; }
+  const a0 = Math.atan2(tx, ty);
+  const c = clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1), phi = Math.acos(c);
+  // two mirror solutions; prefer the joint on side e (screen x), and slightly prefer the lower one
+  let best = null, bestScore = -Infinity;
+  for (const a1 of [a0 + phi, a0 - phi]) {
+    const ex = L1 * Math.sin(a1), ey = L1 * Math.cos(a1);
+    const score = e * ex + 0.3 * ey;
+    if (score > bestScore) { bestScore = score; best = [a1, Math.atan2(tx - ex, ty - ey)]; }
+  }
+  return best;
+}
+function resolveArm(spec, side, sgn) {
+  const m = side * sgn; let up, lo;
+  if (spec.target) { [up, lo] = ik2(m * spec.target.x, spec.target.y, UARM, FARM, m * (spec.elbow ?? 1)); }
+  else { up = m * spec.up; lo = m * spec.lo; }
+  return { up, lo, hand: spec.hand || 'fist', finger: spec.finger == null ? null : m * spec.finger };
+}
+function resolveSpec(p) {
+  const sgn = Math.cos(p.yaw) >= 0 ? 1 : -1;
+  p.armsR = { l: resolveArm(p.arms.l, 1, sgn), r: resolveArm(p.arms.r, -1, sgn) };
+  return p;
+}
+function blendSpec(a, b, s) {
+  const p = {};
+  for (const k of ['cx', 'dip', 'jump', 'travel', 'lean', 'hipTilt', 'headTilt', 'headYaw', 'headNod', 'blush', 'look']) p[k] = lerp(a[k], b[k], s);
+  p.yaw = lerpAngle(a.yaw, b.yaw, s);
+  p.feet = { l: { x: lerp(a.feet.l.x, b.feet.l.x, s), y: lerp(a.feet.l.y, b.feet.l.y, s) }, r: { x: lerp(a.feet.r.x, b.feet.r.x, s), y: lerp(a.feet.r.y, b.feet.r.y, s) } };
+  const late = s >= 0.5 ? b : a;
+  p.expr = late.expr; p.armZ = late.armZ;
+  p.armsR = {};
+  for (const k of ['l', 'r']) {
+    const A1 = a.armsR[k], B1 = b.armsR[k];
+    p.armsR[k] = { up: lerp(A1.up, B1.up, s), lo: lerp(A1.lo, B1.lo, s), hand: late.armsR[k].hand,
+      finger: (A1.finger != null && B1.finger != null) ? lerp(A1.finger, B1.finger, s) : late.armsR[k].finger };
+  }
+  return p;
+}
+function sectionAt(B) { let i = 0; for (let k = 0; k < SECTIONS.length; k++) if (B >= SECTIONS[k].start) i = k; return i; }
+function specAt(t) {
+  const B = t / BEAT; const i = sectionAt(B); const S = SECTIONS[i];
+  let p = resolveSpec(MOVES[S.id](B - S.start));
+  if (i > 0 && B - S.start < BLEND) {
+    const P = SECTIONS[i - 1]; const prev = resolveSpec(MOVES[P.id](B - P.start));
+    p = blendSpec(prev, p, smooth((B - S.start) / BLEND));
+  }
+  return p;
+}
+const rot = (x, y, a) => { const c = Math.cos(a), s = Math.sin(a); return { x: x * c - y * s, y: x * s + y * c }; };
+const add = (p, q) => ({ x: p.x + q.x, y: p.y + q.y });
+const dir = (a, L) => ({ x: L * Math.sin(a), y: L * Math.cos(a) });
+
+function solve(t) {
+  t = Math.max(0, t);
+  const p = specAt(t);
+  const cosY = Math.cos(p.yaw), sgn = cosY >= 0 ? 1 : -1, wsx = 0.45 + 0.55 * Math.abs(cosY);
+  const feetCX = W / 2 + p.travel;
+  const hips = { x: feetCX + p.cx, y: GROUND - p.jump - LEG_STAND + p.dip };
+  const legs = {};
+  for (const [k, s] of [['l', 1], ['r', -1]]) {
+    const hip = { x: hips.x + s * sgn * HIPW / 2 * wsx, y: hips.y };
+    const foot = { x: feetCX + s * sgn * (STANCE + p.feet[k].x) * wsx, y: GROUND - p.jump - p.feet[k].y };
+    const [a1, a2] = ik2(foot.x - hip.x, foot.y - hip.y, THIGH, SHIN, s * sgn);
+    const knee = add(hip, dir(a1, THIGH)); const ankle = add(knee, dir(a2, SHIN));
+    legs[k] = { hip, knee, ankle, a1, a2 };
+  }
+  const neck = add(hips, rot(0, -TORSO, p.lean));
+  const faceRot = p.lean + p.headTilt;
+  const headC = add(add(neck, rot(0, -(NECK + HEAD_R * 0.92), faceRot)), { x: 0, y: p.headNod });
+  const yawT = p.yaw + p.headYaw, cyT = Math.cos(yawT);
+  const arms = {};
+  for (const [k, s] of [['l', 1], ['r', -1]]) {
+    const sh = add(neck, rot(s * sgn * SHW / 2 * wsx, 4, p.lean));
+    const R = p.armsR[k];
+    const el = add(sh, dir(R.up + p.lean, UARM)); const hd = add(el, dir(R.lo + p.lean, FARM));
+    arms[k] = { sh, el, hd, hand: R.hand, dirLo: R.lo + p.lean, finger: R.finger == null ? R.lo + p.lean : R.finger + p.lean, side: s };
+  }
+  const ties = {}, locks = {};
+  for (const [k, s] of [['l', 1], ['r', -1]]) {
+    ties[k] = add(headC, rot(s * cyT * HEAD_R * 0.9, -HEAD_R * 0.55, faceRot));
+    locks[k] = add(headC, rot(s * cyT * HEAD_R * 0.98, -HEAD_R * 0.02, faceRot));
+  }
+  return { t, B: t / BEAT, p, cosY, sgn, wsx, feetCX, hips, legs, neck, headC, faceRot, yawT, arms, ties, locks };
+}
+
+// ===================== drawing helpers =====================
+function capsule(c, a, b, w, fill, outline) {
+  c.lineCap = 'round'; c.lineJoin = 'round';
+  if (outline) { c.strokeStyle = C.line; c.lineWidth = w + 5; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+  if (fill) { c.strokeStyle = fill; c.lineWidth = w; c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke(); }
+}
+function ellipse(c, x, y, rx, ry, fill, stroke, lw = 3) {
+  c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, TAU);
+  if (fill) { c.fillStyle = fill; c.fill(); }
+  if (stroke) { c.strokeStyle = stroke; c.lineWidth = lw; c.stroke(); }
+}
+function poly(c, pts, fill, stroke, lw = 3, close = true) {
+  c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y)); if (close) c.closePath();
+  if (fill) { c.fillStyle = fill; c.fill(); }
+  if (stroke) { c.strokeStyle = stroke; c.lineWidth = lw; c.lineJoin = 'round'; c.stroke(); }
+}
+function star(c, x, y, r, a, fill) {
+  c.save(); c.translate(x, y); c.rotate(a); c.beginPath();
+  for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * 0.38 : r; const ang = i * PI / 4; c.lineTo(Math.cos(ang) * rr, Math.sin(ang) * rr); }
+  c.closePath(); c.fillStyle = fill; c.fill(); c.restore();
+}
+function heart(c, x, y, s, fill) {
+  c.save(); c.translate(x, y); c.scale(s, s); c.beginPath();
+  c.moveTo(0, 4); c.bezierCurveTo(-8, -4, -6, -12, 0, -8); c.bezierCurveTo(6, -12, 8, -4, 0, 4); c.closePath();
+  c.fillStyle = fill; c.fill(); c.restore();
+}
+
+// ===================== character =====================
+function drawTail(c, sk, s, lagPts, flare) {
+  const base = sk.ties[s === 1 ? 'l' : 'r'];
+  const od = (s * Math.cos(sk.yawT) >= 0) ? 1 : -1;
+  const n = 14, pts = [];
+  for (let i = 0; i <= n; i++) {
+    const u = i / n;
+    const k = u * (lagPts.length - 1), k0 = Math.floor(k), k1 = Math.min(lagPts.length - 1, k0 + 1), f = k - k0;
+    const lp = lagPts[k0][s === 1 ? 'l' : 'r'], lq = lagPts[k1][s === 1 ? 'l' : 'r'];
+    const lagX = clamp((lerp(lp.x, lq.x, f) - base.x) * 0.85, -95, 95);
+    const lagY = clamp((lerp(lp.y, lq.y, f) - base.y) * 0.5, -30, 55);
+    const idle = 3 * u * Math.sin(TAU * 0.8 * sk.t + s * 2 + u * 2);
+    const bulge = od * (8 + 20 * Math.sin(PI * Math.min(1, u * 1.15)) * (1 - u * 0.55) + flare * 26 * u);
+    const w = (34 * Math.pow(1 - u, 0.7) + 2.5) * (1 + 0.28 * Math.sin(PI * u));
+    pts.push({ x: base.x + bulge + lagX * u + idle, y: base.y + u * TAILL * (1 - 0.1 * Math.abs(lagX) / 95) + lagY * u, w });
+  }
+  const L = pts.map(p => ({ x: p.x - p.w / 2, y: p.y })), R = pts.map(p => ({ x: p.x + p.w / 2, y: p.y }));
+  const outline = [...L, { x: pts[n].x, y: pts[n].y + 10 }, ...R.reverse()];
+  poly(c, outline, C.hair, C.line, 3);
+  // highlight ribbon on the lit side, shadow near the tie
+  const hl = []; for (let i = 2; i <= n - 1; i++) { const p = pts[i]; hl.push({ x: p.x - od * p.w * 0.1, y: p.y }); }
+  for (let i = n - 1; i >= 2; i--) { const p = pts[i]; hl.push({ x: p.x - od * p.w * 0.32, y: p.y }); }
+  c.globalAlpha = 0.55; poly(c, hl, C.hairLight, null); c.globalAlpha = 1;
+  const sh = []; for (let i = 0; i <= 3; i++) sh.push({ x: pts[i].x + od * pts[i].w * 0.5, y: pts[i].y }); for (let i = 3; i >= 0; i--) sh.push({ x: pts[i].x + od * pts[i].w * 0.18, y: pts[i].y });
+  c.globalAlpha = 0.5; poly(c, sh, C.hairDark, null); c.globalAlpha = 1;
+}
+function drawLock(c, sk, s, lagPts) {
+  const base = sk.locks[s === 1 ? 'l' : 'r'];
+  const od = (s * Math.cos(sk.yawT) >= 0) ? 1 : -1;
+  const lp = lagPts[2][s === 1 ? 'l' : 'r'];
+  const lag = clamp((lp.x - base.x) * 0.35, -30, 30);
+  const n = 6, L = [], R = [];
+  for (let i = 0; i <= n; i++) { const u = i / n; const w = 20 * (1 - u) + 4; const x = base.x + od * 6 * Math.sin(PI * u) + lag * u, y = base.y + u * 118; L.push({ x: x - w / 2, y }); R.push({ x: x + w / 2, y }); }
+  poly(c, [...L, { x: (L[n].x + R[n].x) / 2, y: L[n].y + 8 }, ...R.reverse()], C.hair, C.line, 3);
+}
+function drawLeg(c, leg, s) {
+  const { hip, knee, ankle, a2 } = leg;
+  const fd = dir(a2 + PI / 2, 1); // perpendicular, used to seat the boot
+  const toe = { x: ankle.x + s * 6, y: ankle.y + 7 };
+  // outline pass
+  capsule(c, hip, knee, 19, null, true); capsule(c, knee, ankle, 18, null, true);
+  capsule(c, { x: toe.x - 11, y: toe.y }, { x: toe.x + 11, y: toe.y }, 14, null, true);
+  // fill pass
+  capsule(c, hip, knee, 19, C.skin, false);
+  capsule(c, knee, ankle, 18, C.boot, false);
+  capsule(c, knee, add(knee, dir(a2, 9)), 19, C.trim, false);
+  capsule(c, { x: toe.x - 11, y: toe.y }, { x: toe.x + 11, y: toe.y }, 14, C.boot, false);
+  void fd;
+}
+function drawArm(c, arm) {
+  const { sh, el, hd, hand, dirLo, finger } = arm;
+  const f = dir(finger, 1), fl = dir(dirLo, 1);
+  const fingers = [];
+  if (hand === 'point') fingers.push({ a: finger, L: 17, w: 7 });
+  else if (hand === 'peace') { fingers.push({ a: finger - 0.22, L: 17, w: 6.5 }, { a: finger + 0.22, L: 17, w: 6.5 }); }
+  else if (hand === 'open') { fingers.push({ a: dirLo - 0.35, L: 9, w: 5.5 }, { a: dirLo, L: 10, w: 5.5 }, { a: dirLo + 0.35, L: 9, w: 5.5 }); }
+  const fr = hand === 'fist' ? 11.5 : 12;
+  // outline pass
+  capsule(c, sh, el, 17, null, true); capsule(c, el, hd, 19, null, true);
+  c.fillStyle = C.line; c.beginPath(); c.arc(hd.x, hd.y, fr + 2.5, 0, TAU); c.fill();
+  for (const g of fingers) capsule(c, hd, add(hd, dir(g.a, g.L)), g.w, null, true);
+  // fill pass
+  capsule(c, sh, el, 17, C.skin, false);
+  c.fillStyle = C.skin; c.beginPath(); c.arc(sh.x, sh.y, 9.5, 0, TAU); c.fill();
+  capsule(c, el, hd, 19, C.sleeve, false);
+  capsule(c, add(el, dir(dirLo, FARM * 0.72)), add(el, dir(dirLo, FARM * 0.84)), 20, C.trim, false);
+  c.fillStyle = C.skin; c.beginPath(); c.arc(hd.x, hd.y, fr, 0, TAU); c.fill();
+  for (const g of fingers) capsule(c, hd, add(hd, dir(g.a, g.L)), g.w, C.skin, false);
+  if (hand === 'fist') { c.strokeStyle = C.skinShade; c.lineWidth = 2; c.beginPath(); c.arc(hd.x + fl.x * 3, hd.y + fl.y * 3, 6, 0, TAU); c.stroke(); }
+  void f;
+}
+function drawBody(c, sk, flare) {
+  const p = sk.p, ws = sk.wsx;
+  c.save(); c.translate(sk.hips.x, sk.hips.y); c.rotate(p.lean);
+  // torso
+  const tor = [{ x: -26 * ws, y: -12 }, { x: -33 * ws, y: -TORSO + 12 }, { x: -29 * ws, y: -TORSO - 2 }, { x: 29 * ws, y: -TORSO - 2 }, { x: 33 * ws, y: -TORSO + 12 }, { x: 26 * ws, y: -12 }];
+  poly(c, tor, C.top, C.line, 3);
+  c.fillStyle = C.topShade; c.globalAlpha = 0.35; poly(c, [{ x: 20 * ws, y: -14 }, { x: 26 * ws, y: -14 }, { x: 33 * ws, y: -TORSO + 12 }, { x: 24 * ws, y: -TORSO + 12 }], C.topShade, null); c.globalAlpha = 1;
+  // neck
+  capsule(c, { x: 0, y: -TORSO + 4 }, { x: 0, y: -TORSO - NECK - 6 }, 15, null, true);
+  capsule(c, { x: 0, y: -TORSO + 4 }, { x: 0, y: -TORSO - NECK - 6 }, 15, C.skin, false);
+  if (sk.cosY > 0.05) {
+    // collar + tie
+    poly(c, [{ x: -16 * ws, y: -TORSO }, { x: 0, y: -TORSO + 22 }, { x: 16 * ws, y: -TORSO }], C.collar, C.line, 2.5);
+    poly(c, [{ x: 0, y: -TORSO + 14 }, { x: 7 * ws, y: -TORSO + 30 }, { x: 4 * ws, y: -40 }, { x: 0, y: -32 }, { x: -4 * ws, y: -40 }, { x: -7 * ws, y: -TORSO + 30 }], C.tie, C.line, 2.5);
+    c.fillStyle = C.line; c.beginPath(); c.arc(0, -TORSO + 16, 4, 0, TAU); c.fill();
+  } else {
+    poly(c, [{ x: -16 * ws, y: -TORSO }, { x: 0, y: -TORSO + 10 }, { x: 16 * ws, y: -TORSO }], C.collar, C.line, 2.5);
+  }
+  // skirt (rotates with the pelvis)
+  c.rotate(p.hipTilt);
+  const hemW = 68 * ws * (1 + 0.18 * flare), hemY = 50, waistW = 28 * ws;
+  const hem = []; const nP = 10;
+  for (let i = 0; i <= nP; i++) { const u = i / nP; hem.push({ x: lerp(hemW, -hemW, u), y: hemY + (i % 2 ? 0 : -5) + 6 * Math.sin(PI * u) }); }
+  poly(c, [{ x: -waistW, y: -16 }, { x: waistW, y: -16 }, ...hem], C.skirt, C.line, 3);
+  c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 2;
+  for (let k = -2; k <= 2; k++) { c.beginPath(); c.moveTo(k * 9 * ws, -14); c.lineTo(k * 23 * ws, hemY - 2); c.stroke(); }
+  c.strokeStyle = C.trim; c.lineWidth = 3; c.beginPath(); hem.forEach((h, i) => { const q = { x: h.x * 0.93, y: h.y - 5 }; i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y); }); c.stroke();
+  c.beginPath(); c.moveTo(-waistW, -14); c.lineTo(waistW, -14); c.strokeStyle = C.trim; c.lineWidth = 3; c.stroke();
+  c.restore();
+}
+function drawHead(c, sk, blink) {
+  const p = sk.p, R = HEAD_R, sy = Math.sin(sk.yawT), cy = Math.cos(sk.yawT);
+  const fx = sy * R * 0.42, faceA = clamp((cy + 0.12) * 3, 0, 1);
+  c.save(); c.translate(sk.headC.x, sk.headC.y); c.rotate(sk.faceRot);
+  ellipse(c, 0, -4, R * 1.1, R * 1.08, C.hair, C.line);
+  ellipse(c, 0, 2, R, R * 0.98, C.skin, C.line);
+  if (faceA > 0) { c.globalAlpha = faceA; drawFace(c, p, fx, sy, blink); c.globalAlpha = 1; }
+  const ox = fx * 0.6;
+  if (cy < 0) {
+    // back of the head: a full cap of hair with a few strands at the nape
+    ellipse(c, 0, 0, R * 1.03, R * 1.0, C.hair, C.line);
+    c.beginPath(); c.moveTo(-R * 0.9, R * 0.3);
+    for (const [zx, zy] of [[-0.6, 0.78], [-0.3, 0.5], [0, 0.82], [0.3, 0.5], [0.6, 0.78], [0.9, 0.3]]) c.lineTo(zx * R, zy * R);
+    c.strokeStyle = C.hairLine; c.lineWidth = 2; c.globalAlpha = 0.5; c.stroke(); c.globalAlpha = 1;
+  } else {
+  // bangs
+  c.beginPath(); c.moveTo(-R * 1.1 + ox * 0.2, 0); c.arc(ox * 0.2, -4, R * 1.1, PI, TAU, false);
+  const zig = [[0.98, 0.0], [0.8, 0.22], [0.58, -0.04], [0.3, 0.24], [0.04, -0.02], [-0.22, 0.22], [-0.48, -0.04], [-0.72, 0.2], [-0.92, 0.0]];
+  for (const [zx, zy] of zig) c.lineTo(zx * R + ox, zy * R);
+  c.closePath(); c.fillStyle = C.hair; c.fill(); c.strokeStyle = C.line; c.lineWidth = 3; c.lineJoin = 'round'; c.stroke();
+  c.globalAlpha = 0.55; c.strokeStyle = C.hairLight; c.lineWidth = 5; c.lineCap = 'round';
+  c.beginPath(); c.arc(ox * 0.2, 0, R * 0.86, PI * 1.25, PI * 1.6); c.stroke(); c.globalAlpha = 1;
+  }
+  // headphones
+  for (const s of [-1, 1]) {
+    const hx = s * R * 0.98 * cy; c.fillStyle = C.dark; c.strokeStyle = C.line; c.lineWidth = 2.5;
+    c.beginPath(); c.roundRect(hx - 11, -R * 0.18, 22, 34, 7); c.fill(); c.stroke();
+    c.fillStyle = C.trim; c.beginPath(); c.arc(hx, 0, 4, 0, TAU); c.fill();
+  }
+  // hair ties (tails attach here)
+  for (const s of [-1, 1]) {
+    const tx = s * R * 0.9 * cy, ty = -R * 0.55; c.fillStyle = C.dark; c.strokeStyle = C.line; c.lineWidth = 2.5;
+    c.beginPath(); c.roundRect(tx - 14, ty - 14, 28, 28, 6); c.fill(); c.stroke();
+    c.fillStyle = C.pinkAcc; c.beginPath(); c.roundRect(tx - 6, ty - 6, 12, 12, 2); c.fill();
+  }
+  c.restore();
+}
+function drawFace(c, p, fx, sy, blink) {
+  const R = HEAD_R;
+  for (const s of [-1, 1]) { c.fillStyle = `rgba(${C.blush},${0.3 + 0.35 * p.blush})`; ellipse(c, s * R * 0.6 + fx * 0.8, R * 0.5, 16, 9, c.fillStyle, null); }
+  for (const s of [-1, 1]) {
+    const far = Math.max(0, -s * sy), kx = 1 - 0.45 * far;
+    const ex = s * R * 0.36 * (1 - 0.1 * Math.abs(sy)) + fx, ey = R * 0.24, ew = R * 0.17 * kx, eh = R * 0.27;
+    const closed = (p.expr === 'wink' && s === -1) ? 1 : blink;
+    c.save(); c.translate(ex, ey);
+    if (closed > 0.85) {
+      c.strokeStyle = C.line; c.lineWidth = 4.5; c.lineCap = 'round'; c.beginPath(); c.moveTo(-ew - 2, 3); c.quadraticCurveTo(0, -eh * 0.55, ew + 2, 3); c.stroke();
+    } else {
+      c.scale(1, 1 - closed * 0.9);
+      ellipse(c, 0, 0, ew, eh, '#fff', null);
+      const ix = p.look * ew * 0.35;
+      const g = c.createLinearGradient(0, -eh, 0, eh); g.addColorStop(0, C.eyeDark); g.addColorStop(0.55, C.eye); g.addColorStop(1, C.hairLight);
+      ellipse(c, ix, eh * 0.08, ew * 0.78, eh * 0.86, g, null);
+      ellipse(c, ix, eh * 0.12, ew * 0.36, eh * 0.5, '#1B2A30', null);
+      ellipse(c, ix - ew * 0.3, -eh * 0.35, ew * 0.28, ew * 0.28, '#fff', null);
+      ellipse(c, ix + ew * 0.3, eh * 0.4, ew * 0.14, ew * 0.14, '#fff', null);
+      c.strokeStyle = C.line; c.lineWidth = 4.5; c.lineCap = 'round';
+      c.beginPath(); c.ellipse(0, 0, ew + 1, eh + 1, 0, PI * 1.03, PI * 1.97); c.stroke();
+      c.beginPath(); c.moveTo(s * (ew + 1), -eh * 0.15); c.lineTo(s * (ew + 7), -eh * 0.35); c.stroke();
+      c.lineWidth = 2; c.strokeStyle = 'rgba(42,46,58,.45)'; c.beginPath(); c.ellipse(0, 0, ew, eh, 0, PI * 0.2, PI * 0.8); c.stroke();
+    }
+    c.restore();
+    c.strokeStyle = C.hairLine; c.lineWidth = 3; c.lineCap = 'round'; c.beginPath();
+    c.moveTo(ex - ew * 1.1, ey - eh * 1.5); c.quadraticCurveTo(ex, ey - eh * 1.8, ex + ew * 1.1, ey - eh * 1.5); c.stroke();
+  }
+  const mx = fx * 0.9, my = R * 0.62; c.lineCap = 'round';
+  if (p.expr === 'smile') { c.strokeStyle = C.line; c.lineWidth = 3; c.beginPath(); c.moveTo(mx - 9, my - 2); c.quadraticCurveTo(mx, my + 7, mx + 9, my - 2); c.stroke(); }
+  else if (p.expr === 'open') {
+    c.beginPath(); c.moveTo(mx - 11, my - 3); c.quadraticCurveTo(mx, my + 20, mx + 11, my - 3); c.closePath(); c.fillStyle = C.mouth; c.fill(); c.strokeStyle = C.line; c.lineWidth = 2.5; c.stroke();
+    c.save(); c.clip(); ellipse(c, mx, my + 12, 8, 6, C.tongue, null); c.fillStyle = '#fff'; c.fillRect(mx - 9, my - 4, 18, 3); c.restore();
+  }
+  else if (p.expr === 'oo') { ellipse(c, mx, my + 3, 5, 6, C.mouth, C.line, 2.5); }
+  else { c.strokeStyle = C.line; c.lineWidth = 3; c.beginPath(); c.moveTo(mx - 12, my - 2); c.quadraticCurveTo(mx - 6, my + 9, mx, my + 1); c.quadraticCurveTo(mx + 6, my + 9, mx + 12, my - 2); c.stroke(); }
+}
+function blinkAmt(t) {
+  const P = 3.1, k = Math.floor(t / P), off = hash(k) * (P - 0.4);
+  const u = (t - k * P - off) / 0.16; return (u < 0 || u > 1) ? 0 : Math.sin(PI * u);
+}
+function drawCharacter(c, sk) {
+  const t = sk.t;
+  const lagPts = [0, 0.09, 0.18, 0.27, 0.36].map(d => d ? (() => { const s2 = solve(t - d); return { l: s2.ties.l, r: s2.ties.r }; })() : { l: sk.ties.l, r: sk.ties.r });
+  const yawPrev = solve(t - 0.09).p.yaw;
+  const flare = clamp(Math.abs(sk.p.yaw - yawPrev) * 1.6 + Math.max(0, (solve(t - 0.09).p.jump - sk.p.jump)) * 0.03, 0, 1);
+  const blink = sk.p.expr === 'wink' ? 0 : blinkAmt(t);
+  // ground shadow
+  c.fillStyle = 'rgba(60,40,60,.16)'; ellipse(c, sk.feetCX + sk.p.cx * 0.3, GROUND + 9, 76 * (1 - sk.p.jump / 160), 12, c.fillStyle, null);
+  const sinY = Math.sin(sk.yawT);
+  const depth = s => Math.cos(sk.yawT) - s * sinY * 0.8; // >0 => tail is behind the body
+  for (const s of [1, -1]) if (depth(s) > 0) drawTail(c, sk, s, lagPts, flare);
+  const backArm = sinY >= 0 ? 'r' : 'l', frontArm = backArm === 'r' ? 'l' : 'r';
+  const armsBack = sk.p.armZ === 'back' || sk.cosY < 0;
+  if (armsBack) { drawArm(c, sk.arms[backArm]); drawArm(c, sk.arms[frontArm]); }
+  const backLeg = sinY >= 0 ? 'r' : 'l', frontLeg = backLeg === 'r' ? 'l' : 'r';
+  drawLeg(c, sk.legs[backLeg], backLeg === 'l' ? 1 : -1); drawLeg(c, sk.legs[frontLeg], frontLeg === 'l' ? 1 : -1);
+  drawBody(c, sk, flare);
+  if (!armsBack) drawArm(c, sk.arms[backArm]);
+  drawHead(c, sk, blink);
+  if (sk.cosY >= 0) for (const s of [1, -1]) drawLock(c, sk, s, lagPts);
+  if (!armsBack) drawArm(c, sk.arms[frontArm]);
+  for (const s of [1, -1]) if (depth(s) <= 0) drawTail(c, sk, s, lagPts, flare);
+}
+
+// ===================== scene =====================
+const FONT = '"M PLUS Rounded 1c","Noto Sans SC","WenQuanYi Zen Hei",sans-serif';
+function drawBackground(c, t, B) {
+  const g = c.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#F9DCE7'); g.addColorStop(0.55, '#FFF3EE'); g.addColorStop(1, '#D9F3EF');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  // soft dots
+  c.fillStyle = 'rgba(233,83,143,.07)';
+  for (let i = 0; i < 14; i++) { const x = (i * 97 + 40) % W, y = 60 + ((i * 173) % 420); c.beginPath(); c.arc(x, y, 34 + (i % 3) * 14, 0, TAU); c.fill(); }
+  // floor
+  const fg = c.createLinearGradient(0, GROUND - 20, 0, H); fg.addColorStop(0, 'rgba(90,170,165,.18)'); fg.addColorStop(1, 'rgba(90,170,165,.32)');
+  c.fillStyle = fg; c.fillRect(0, GROUND + 4, W, H - GROUND - 4);
+  c.strokeStyle = 'rgba(40,110,105,.25)'; c.lineWidth = 2; c.beginPath(); c.moveTo(0, GROUND + 4); c.lineTo(W, GROUND + 4); c.stroke();
+  // beat rings behind the dancer
+  const u = fract(B), beatIdx = Math.floor(B);
+  if (B > 0.2) {
+    c.lineWidth = 2 + 6 * (1 - u); c.strokeStyle = beatIdx % 2 ? `rgba(63,201,191,${0.3 * (1 - u)})` : `rgba(233,83,143,${0.22 * (1 - u)})`;
+    c.beginPath(); c.arc(W / 2, GROUND - 230, 110 + 260 * u, 0, TAU); c.stroke();
+    if (beatIdx % 4 === 0) { c.lineWidth = 2; c.strokeStyle = `rgba(255,255,255,${0.5 * (1 - u)})`; c.beginPath(); c.arc(W / 2, GROUND - 230, 60 + 420 * u, 0, TAU); c.stroke(); }
+  }
+  // drifting stars
+  for (let i = 0; i < 18; i++) {
+    const sp = 0.025 + 0.02 * hash(i + 9); const y = H - fract(t * sp + hash(i + 3)) * (H + 40) + 20;
+    const x = hash(i) * W + 14 * Math.sin(t * 0.7 + i); const col = ['rgba(233,83,143,.45)', 'rgba(63,201,191,.5)', 'rgba(255,205,90,.6)'][i % 3];
+    star(c, x, y, 5 + 5 * hash(i + 5), t * 0.6 + i, col);
+  }
+}
+function drawEffects(c, sk, t, B) {
+  const sec = SECTIONS[sectionAt(B)];
+  // fingertip sparkles when a pointing hand is at its peak
+  if (sec.id === 'point' || sec.id === 'reprise' || (sec.id === 'intro' && B >= 6)) {
+    for (const k of ['l', 'r']) { const a = sk.arms[k]; if (a.hand !== 'point') continue; const tip = add(a.hd, dir(a.finger, 22));
+      const ph = fract(B + (k === 'l' ? 0 : 0.5)); const al = Math.max(0, 1 - ph * 2.2);
+      if (al > 0) { star(c, tip.x + 10 * sk.arms[k].side, tip.y - 10, 16 * al + 4, B * 3, `rgba(255,220,110,${0.9 * al})`); star(c, tip.x - 14 * sk.arms[k].side, tip.y - 26, 9 * al + 2, -B * 2, `rgba(255,255,255,${0.9 * al})`); }
+    }
+  }
+  if (sec.id === 'cheek') {
+    for (let bar = 0; bar < 4; bar++) { const t0 = (80 + bar * 4) * BEAT; const u = (t - t0) / 1.3; if (u < 0 || u > 1) continue;
+      for (let i = 0; i < 5; i++) { const s = i % 2 ? 1 : -1; const x = sk.headC.x + s * (70 + 40 * hash(i + bar * 7)) + 20 * Math.sin(u * 6 + i), y = sk.headC.y - 10 - u * (90 + 60 * hash(i + 3 + bar)); heart(c, x, y, 1.6 + 0.6 * hash(i), `rgba(240,90,140,${(1 - u) * 0.9})`); } }
+  }
+  if (sec.id === 'step') {
+    for (let bar = 0; bar < 4; bar++) for (const q of [1.4, 3.4]) { const tb = 96 + bar * 4 + q; const u = (B - tb) / 1.1; if (u < 0 || u > 1) continue;
+      const s2 = solve(tb * BEAT); const cxp = (s2.arms.l.hd.x + s2.arms.r.hd.x) / 2, cyp = (s2.arms.l.hd.y + s2.arms.r.hd.y) / 2;
+      for (let i = 0; i < 8; i++) { const a = i / 8 * TAU + bar; const r = 16 + 70 * smooth(u); star(c, cxp + Math.cos(a) * r, cyp + Math.sin(a) * r, 7 * (1 - u) + 1, a, `rgba(255,214,90,${1 - u})`); } }
+  }
+  if (sec.id === 'final') {
+    const u = (B - 124) / 2.2; if (u >= 0 && u < 1) {
+      for (let i = 0; i < 28; i++) { const a = i / 28 * TAU + 0.3; const r = 60 + 420 * Math.pow(u, 0.6) * (0.7 + 0.3 * hash(i)); const x = W / 2 + Math.cos(a) * r, y = GROUND - 200 + Math.sin(a) * r * 0.75;
+        const col = ['rgba(233,83,143,', 'rgba(63,201,191,', 'rgba(255,205,90,'][i % 3]; star(c, x, y, 12 * (1 - u) + 2, a + u * 4, col + (1 - u) + ')'); }
+    }
+  }
+}
+function drawHud(c, t, B) {
+  const sec = SECTIONS[sectionAt(B)], idx = SECTIONS.indexOf(sec);
+  c.save(); c.textBaseline = 'middle';
+  // section pill
+  const label = `${String(idx + 1).padStart(2, '0')} · ${sec.cn}`;
+  c.font = `800 22px ${FONT}`; const tw = c.measureText(label).width;
+  c.fillStyle = 'rgba(255,255,255,.78)'; c.beginPath(); c.roundRect(28, 26, tw + 36, 44, 22); c.fill();
+  c.fillStyle = '#0B5F5B'; c.textAlign = 'left'; c.fillText(label, 46, 48);
+  c.font = `500 15px ${FONT}`; c.fillStyle = 'rgba(11,95,91,.75)'; c.fillText(sec.en, 46, 86);
+  // beat dots
+  for (let i = 0; i < 4; i++) { const on = Math.floor(B) % 4 === i; const u = fract(B); c.fillStyle = on ? '#E9538F' : 'rgba(233,83,143,.3)'; c.beginPath(); c.arc(W - 150 + i * 22, 86, on ? 5 + 3 * (1 - u) : 4, 0, TAU); c.fill(); }
+  // timecode
+  const mm = Math.floor(t / 60), ss = t - mm * 60;
+  c.font = `800 20px ${FONT}`; c.textAlign = 'right'; c.fillStyle = 'rgba(11,95,91,.9)';
+  c.fillText(`${mm}:${ss.toFixed(1).padStart(4, '0')} / 1:00.0`, W - 30, 48);
+  // title card during the intro
+  const a = Math.min(1, t / 0.5) * (1 - smooth((t - 2.6) / 0.7));
+  if (a > 0) {
+    c.globalAlpha = a; c.textAlign = 'center';
+    c.font = `800 54px ${FONT}`; c.fillStyle = '#E9538F'; c.fillText('初音未来 × 书记舞', W / 2 + 3, 128 + 3);
+    c.fillStyle = '#0B5F5B'; c.fillText('初音未来 × 书记舞', W / 2, 128);
+    c.font = `500 20px ${FONT}`; c.fillStyle = 'rgba(11,95,91,.8)'; c.fillText('Chika dance · 60 s · 128 BPM', W / 2, 176);
+    c.globalAlpha = 1;
+  }
+  if (t > DURATION - 1.4) {
+    const b = smooth((t - (DURATION - 1.4)) / 0.8); c.globalAlpha = b; c.textAlign = 'center';
+    c.font = `800 30px ${FONT}`; c.fillStyle = '#0B5F5B'; c.fillText('♪ 谢谢观看 ♪', W / 2, 150); c.globalAlpha = 1;
+  }
+  c.restore();
+}
+function renderFrame(c, t) {
+  t = clamp(t, 0, DURATION); const B = t / BEAT;
+  const sk = solve(t);
+  drawBackground(c, t, B);
+  c.save(); c.translate(W / 2, GROUND); c.scale(1.2, 1.2); c.translate(-W / 2, -GROUND);
+  drawCharacter(c, sk);
+  drawEffects(c, sk, t, B);
+  c.restore();
+  drawHud(c, t, B);
+}
+
+// ===================== music (original, synthesized) =====================
+function synthSong(sr) {
+  const N = Math.floor((DURATION + 0.6) * sr), out = new Float32Array(N);
+  let seed = 1337; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296 * 2 - 1; };
+  const bs = BEAT * sr, m2f = m => 440 * Math.pow(2, (m - 69) / 12);
+  const tone = (beat, lenB, midi, vol, type, o = {}) => {
+    const s0 = Math.floor(beat * bs), len = Math.floor(lenB * bs), rel = Math.floor(0.03 * sr), f = m2f(midi);
+    const dec = o.dec ?? 1.5, cut = o.cut ?? 1, vib = o.vib ?? 0, det = o.det ?? 0; let ph = 0, ph2 = 0, lp = 0;
+    for (let i = 0; i < len + rel; i++) {
+      const idx = s0 + i; if (idx >= N) break; const tt = i / sr;
+      const env = Math.min(1, tt * 400) * Math.exp(-tt * dec) * (i > len ? 1 - (i - len) / rel : 1);
+      const ff = f * (1 + vib * Math.sin(TAU * 5.5 * tt) * Math.min(1, tt * 3));
+      ph += ff / sr; ph2 += ff * (1 + det) / sr; const p = ph - Math.floor(ph), p2 = ph2 - Math.floor(ph2);
+      let v; switch (type) {
+        case 'sq': v = (p < 0.5 ? 1 : -1) * 0.7 + (p2 < 0.5 ? 1 : -1) * 0.3; break;
+        case 'pulse': v = p < 0.22 ? 1 : -1; break;
+        case 'saw': v = (2 * p - 1) * 0.6 + (2 * p2 - 1) * 0.4; break;
+        case 'tri': v = 1 - 4 * Math.abs(p - 0.5); break;
+        default: v = Math.sin(TAU * p);
+      }
+      lp += (v - lp) * cut; out[idx] += lp * env * vol;
+    }
+  };
+  const kick = (beat, vol = 1) => { const s0 = Math.floor(beat * bs); let ph = 0; for (let i = 0; i < 0.35 * sr; i++) { const idx = s0 + i; if (idx >= N) break; const tt = i / sr; const f = 48 + 160 * Math.exp(-tt * 30); ph += f / sr; let v = Math.sin(TAU * ph) * Math.exp(-tt * 8); if (tt < 0.01) v += rnd() * 0.4 * (1 - tt / 0.01); out[idx] += v * vol * 0.95; } };
+  const clap = (beat, vol = 1) => { const s0 = Math.floor(beat * bs); let lp = 0; for (let i = 0; i < 0.25 * sr; i++) { const idx = s0 + i; if (idx >= N) break; const tt = i / sr; let env = Math.exp(-tt * 18); if (tt < 0.03) env *= 0.5 + 0.5 * Math.cos(TAU * tt / 0.01); const nz = rnd(); lp += (nz - lp) * 0.35; out[idx] += (nz - lp) * env * vol * 0.9; } };
+  const hat = (beat, open, vol) => { const s0 = Math.floor(beat * bs), L = (open ? 0.14 : 0.04) * sr; let prev = 0; for (let i = 0; i < L; i++) { const idx = s0 + i; if (idx >= N) break; const tt = i / sr; const nz = rnd(); out[idx] += (nz - prev) * Math.exp(-tt * (open ? 22 : 70)) * vol * 0.5; prev = nz; } };
+  const crash = (beat, vol) => { const s0 = Math.floor(beat * bs); let prev = 0; for (let i = 0; i < 2.2 * sr; i++) { const idx = s0 + i; if (idx >= N) break; const tt = i / sr; const nz = rnd(); out[idx] += (nz - prev * 0.5) * Math.exp(-tt * 2.2) * vol * 0.35; prev = nz; } };
+  const bassRoot = { D: 38, A: 45, Bm: 35, G: 43, 'F#m': 42, Em: 40 };
+  const chordT = { D: [62, 66, 69], A: [61, 64, 69], Bm: [62, 66, 71], G: [62, 67, 71], 'F#m': [61, 66, 69], Em: [64, 67, 71] };
+  const prog = ['D', 'D', 'D', 'A', 'Bm', 'G', 'D', 'A', 'Bm', 'G', 'G', 'A', 'F#m', 'Bm', 'G', 'A', 'D', 'A', 'Em', 'A', 'D', 'A', 'Bm', 'G', 'D', 'A', 'Bm', 'G', 'D', 'A', 'G', 'D'];
+  for (let bar = 0; bar < 32; bar++) for (let bt = 0; bt < 4; bt++) {
+    const B = bar * 4 + bt;
+    if (bar === 31) { if (bt === 0) { kick(B, 1); crash(B, 0.7); } continue; }
+    if (bar >= 18 && bar < 20) { for (let k = 0; k < 4; k++) clap(B + k / 4, 0.22 + ((bar - 18) * 4 + bt) / 8 * 0.5); if (bt % 2 === 0) hat(B, false, 0.5); continue; }
+    kick(B, 1); hat(B, false, 0.7); hat(B + 0.5, bar >= 2 && bt % 2 === 1, 0.9);
+    if (bar >= 2 && (bt === 1 || bt === 3)) clap(B, 0.9);
+    if (bar === 1 && bt === 3) { clap(B, 0.6); clap(B + 0.5, 0.8); }
+  }
+  for (let bar = 0; bar < 32; bar++) {
+    const ch = prog[bar], r = bassRoot[ch], tones = chordT[ch];
+    if (bar === 31) { tone(bar * 4, 4, r, 0.45, 'saw', { dec: 0.6, cut: 0.12 }); tones.forEach(m => tone(bar * 4, 4, m, 0.14, 'pulse', { dec: 0.5, cut: 0.25, vib: 0.004 })); tone(bar * 4, 4, r + 12, 0.1, 'tri', { dec: 0.5 }); continue; }
+    const pat = [0, 12, 0, 12, 0, 12, 7, 12], sparse = bar < 2 || (bar >= 18 && bar < 20);
+    for (let k = 0; k < 8; k++) { if (sparse && k % 2) continue; tone(bar * 4 + k * 0.5, 0.45, r + pat[k], 0.42, 'saw', { dec: 4, cut: 0.14 }); }
+    for (let k = 0; k < 4; k++) { if (sparse) continue; tones.forEach(m => tone(bar * 4 + k + 0.5, 0.3, m, 0.11, 'pulse', { dec: 7, cut: 0.3 })); }
+    if (sparse) tones.forEach((m, i) => tone(bar * 4 + i * 0.5, 1.5, m + 12, 0.08, 'tri', { dec: 2 }));
+  }
+  const P1 = [74, 0, 76, 78, 81, 0, 78, 76, 74, 0, 71, 0, 69, 0, 71, 74, 76, 0, 78, 81, 83, 0, 81, 78, 76, 78, 74, -1, -1, 0, 0, 0];
+  const P1b = [74, 0, 76, 78, 81, 0, 78, 76, 74, 0, 71, 0, 69, 0, 71, 74, 76, 0, 78, 81, 83, 0, 85, 86, 86, -1, -1, 0, 85, 83, 81, 78];
+  const P2a = [78, 0, 78, 0, 81, 0, 78, 81, 83, -1, 0, 81, 78, 0, 76, 0, 74, 0, 74, 0, 76, 0, 78, 76, 74, -1, -1, 0, 0, 0, 69, 71];
+  const P2b = [78, 0, 78, 0, 81, 0, 78, 81, 83, -1, 0, 85, 86, -1, -1, 0, 85, 0, 83, 0, 81, 0, 78, 81, 83, -1, -1, -1, -1, 0, 0, 0];
+  const RISE = [62, 64, 66, 67, 69, 71, 73, 74, 76, 78, 81, 83, 85, 86, 88, 0];
+  const P3 = [81, 0, 81, 0, 78, 0, 0, 0, 81, 0, 81, 0, 83, 0, 0, 0, 81, 0, 78, 0, 76, 0, 78, 0, 74, -1, 0, 0, 0, 0, 0, 0];
+  const P4 = [74, 0, 76, 78, 81, 0, 78, 76, 74, 0, 71, 0, 69, 0, 71, 74, 76, 78, 81, 83, 85, 86, 88, -1];
+  const PICK = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 69, 71, 73];
+  const lead = (startBar, arr, vol = 0.2) => {
+    for (let i = 0; i < arr.length; i++) {
+      const m = arr[i]; if (m <= 0) continue; let len = 1; while (i + len < arr.length && arr[i + len] === -1) len++;
+      const beat = startBar * 4 + i * 0.5, lb = len * 0.5;
+      tone(beat, lb * 0.9, m, vol, 'sq', { dec: len > 1 ? 0.8 : 2.5, cut: 0.5, vib: 0.006, det: 0.003 });
+      tone(beat + 0.75, lb * 0.8, m, vol * 0.3, 'sq', { dec: 3, cut: 0.35 });
+      tone(beat + 1.5, lb * 0.7, m, vol * 0.12, 'sq', { dec: 3, cut: 0.3 });
+    }
+  };
+  lead(0, PICK); lead(2, P1); lead(6, P1b); lead(10, P2a); lead(14, P2b); lead(18, RISE, 0.16); lead(20, P3, 0.22); lead(24, P1); lead(28, P4);
+  tone(124, 3.6, 86, 0.2, 'sq', { dec: 0.5, cut: 0.4, vib: 0.012 }); tone(124, 3.6, 74, 0.12, 'tri', { dec: 0.4 });
+  let peak = 0; for (let i = 0; i < N; i++) { out[i] = Math.tanh(out[i] * 1.1); if (Math.abs(out[i]) > peak) peak = Math.abs(out[i]); }
+  const g = 0.95 / (peak || 1), fadeS = Math.floor((DURATION - 0.6) * sr);
+  for (let i = 0; i < N; i++) { let v = out[i] * g; if (i > fadeS) v *= Math.max(0, 1 - (i - fadeS) / (0.6 * sr)); out[i] = v; }
+  return out;
+}
+function wavFromFloat(samples, sr) {
+  const n = samples.length, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); str(8, 'WAVE'); str(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.round(clamp(samples[i], -1, 1) * 32767), true);
+  return buf;
+}
+
+// ===================== page wiring =====================
+const canvas = document.getElementById('stage-canvas'), ctx = canvas.getContext('2d');
+const bigplay = document.getElementById('bigplay'), bigLabel = document.getElementById('bigplay-label');
+const playBtn = document.getElementById('play'), muteBtn = document.getElementById('mute'), timeEl = document.getElementById('time'), scrub = document.getElementById('scrub'), chips = document.getElementById('chips');
+let playing = false, tCur = 0, t0 = 0, muted = false, ended = false, scrubbing = false;
+let audio = null; // { ctx, buf, gain, src }
+try { muted = localStorage.getItem('miku-chika-muted') === '1'; } catch (e) { /* storage unavailable */ }
+
+function fit() {
+  const r = canvas.getBoundingClientRect(); const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = Math.max(2, Math.round(r.width * dpr)), h = Math.max(2, Math.round(r.height * dpr));
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+}
+function draw(t) { fit(); ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0); renderFrame(ctx, t); }
+function fmt(t) { const m = Math.floor(t / 60), s = t - m * 60; return `${m}:${s.toFixed(1).padStart(4, '0')}`; }
+function updateUi(t) {
+  timeEl.textContent = `${fmt(t)} / ${fmt(DURATION)}`;
+  if (!scrubbing) scrub.value = String(t);
+  const i = sectionAt(t / BEAT);
+  chips.querySelectorAll('.chip').forEach((el, k) => el.setAttribute('aria-current', k === i ? 'true' : 'false'));
+  playBtn.textContent = playing ? '暂停' : (ended ? '重播' : '播放');
+  bigplay.hidden = playing; bigLabel.textContent = ended ? '再看一遍' : '播放';
+  muteBtn.textContent = muted ? '取消静音' : '静音';
+  muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
+}
+function now() {
+  if (!playing) return tCur;
+  return audio ? audio.ctx.currentTime - t0 : performance.now() / 1000 - t0;
+}
+function ensureAudio() {
+  if (audio) return audio;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+    const actx = new AC(); const data = synthSong(actx.sampleRate);
+    const buf = actx.createBuffer(1, data.length, actx.sampleRate); buf.copyToChannel(data, 0);
+    const gain = actx.createGain(); gain.gain.value = muted ? 0 : 0.9; gain.connect(actx.destination);
+    audio = { ctx: actx, buf, gain, src: null };
+  } catch (e) { audio = null; }
+  return audio;
+}
+function stopSrc() { if (audio && audio.src) { try { audio.src.stop(); } catch (e) { /* already stopped */ } audio.src.disconnect(); audio.src = null; } }
+function startAt(t) {
+  tCur = t; ended = false;
+  if (ensureAudio()) {
+    stopSrc(); audio.ctx.resume();
+    const src = audio.ctx.createBufferSource(); src.buffer = audio.buf; src.connect(audio.gain);
+    src.start(0, clamp(t, 0, DURATION)); audio.src = src; t0 = audio.ctx.currentTime - t;
+  } else { t0 = performance.now() / 1000 - t; }
+  playing = true; updateUi(t); loop();
+}
+function pause() { tCur = now(); playing = false; stopSrc(); updateUi(tCur); draw(tCur); }
+function seek(t, keepPlaying = true) { t = clamp(t, 0, DURATION); if (playing && keepPlaying) startAt(t); else { tCur = t; ended = t >= DURATION; updateUi(t); draw(t); } }
+function toggle() { if (playing) pause(); else startAt(ended || tCur >= DURATION ? 0 : tCur); }
+let raf = 0;
+function loop() {
+  cancelAnimationFrame(raf);
+  const step = () => {
+    if (!playing) return;
+    let t = now();
+    if (t >= DURATION) { t = DURATION; tCur = t; playing = false; ended = true; stopSrc(); updateUi(t); draw(t); return; }
+    tCur = t; draw(t); updateUi(t); raf = requestAnimationFrame(step);
+  };
+  raf = requestAnimationFrame(step);
+}
+bigplay.addEventListener('click', toggle); playBtn.addEventListener('click', toggle);
+muteBtn.addEventListener('click', () => { muted = !muted; if (audio) audio.gain.gain.value = muted ? 0 : 0.9; try { localStorage.setItem('miku-chika-muted', muted ? '1' : '0'); } catch (e) { /* ignore */ } updateUi(now()); });
+scrub.addEventListener('input', () => { scrubbing = true; const t = parseFloat(scrub.value); tCur = t; draw(t); timeEl.textContent = `${fmt(t)} / ${fmt(DURATION)}`; });
+scrub.addEventListener('change', () => { scrubbing = false; seek(parseFloat(scrub.value)); });
+document.addEventListener('keydown', e => {
+  if (e.target && /INPUT|BUTTON|TEXTAREA/.test(e.target.tagName) && e.code !== 'Space') return;
+  if (e.code === 'Space') { e.preventDefault(); toggle(); }
+  else if (e.code === 'ArrowRight') seek(now() + 2); else if (e.code === 'ArrowLeft') seek(now() - 2);
+});
+SECTIONS.forEach((s, i) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.id = `chip-${s.id}`; b.setAttribute('role', 'listitem');
+  b.innerHTML = `<b>${String(i + 1).padStart(2, '0')}</b>${s.cn}`; b.title = `${s.en} · ${fmt(s.start * BEAT)}`;
+  b.addEventListener('click', () => { if (playing) startAt(s.start * BEAT); else seek(s.start * BEAT, false); });
+  chips.appendChild(b);
+});
+scrub.max = String(DURATION);
+window.addEventListener('resize', () => { if (!playing) draw(tCur); });
+
+// Offline rendering hooks (used by render.mjs to produce the MP4).
+window.__prepareRender = (w, h) => { canvas.width = w; canvas.height = h; canvas.style.width = w + 'px'; canvas.style.height = h + 'px'; };
+window.__renderFrame = t => { ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0); renderFrame(ctx, t); return canvas.toDataURL('image/png').split(',')[1]; };
+window.__renderWav = (sr = 44100) => { const bytes = new Uint8Array(wavFromFloat(synthSong(sr), sr)); let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); };
+
+function start(data) { tCur = clamp(+(data && data.t) || 0, 0, DURATION); ended = tCur >= DURATION; updateUi(tCur); draw(tCur); }
+if (window.claude && window.claude.hot && window.claude.hot.snapshot) window.claude.hot.snapshot(() => ({ t: now() }));
+(window.claude && window.claude.hot && window.claude.hot.ready) ? window.claude.hot.ready(start) : start((window.claude && window.claude.hot && window.claude.hot.data) || {});
+})();
+</script>
