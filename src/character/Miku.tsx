@@ -231,7 +231,7 @@ export const Miku: React.FC<{beat: number}> = ({beat}) => {
   const p = sk.pose;
   const back = sk.cosT < 0;
   const sx = (sk.cosT < 0 ? -1 : 1) * Math.max(Math.abs(sk.cosT), 0.08);
-  const shear = clamp((lag.pelvis[0] - sk.pelvis[0]) * 0.9, -40, 40) + sk.spread * 0;
+  const shear = clamp((lag.pelvis[0] - sk.pelvis[0]) * 0.5, -18, 18);
   const flare = clamp((sk.pelvis[1] - lag.pelvis[1]) * 0.35, -8, 22) + sk.spread * 26;
   const tieSway = clamp((sk.chest[0] - lag.chest[0]) * 0.6, -24, 24);
   const neckTop = along(sk.neck, sk.headC, 0.55);
